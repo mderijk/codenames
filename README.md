@@ -69,7 +69,7 @@ We apply several filters to the word embeddings file, only including words which
 
 Additionally, we assume that the embeddings file is ordered by word frequency, so we reduce the search space by taking the top-n word embeddings from the file that pass the above filters. Reducing the search space not only prevents the model from using niche words that a player might not know (in other words: useless hints), but also helps reduce server load when running the model.
 
-For practical purposes `word_embeddings/filter.py` also requires the lexicon that you want to use. A trimmed lexicon is produced in cases where there are words in the lexicon that do not occur in the word embeddings file. This trimmed lexicon can then be used in the actual application to avoid situations where the model cannot generate a hint for a word because it has never seen it before.
+For practical purposes `filter.py` also requires the lexicon that you want to use. A trimmed lexicon is produced in cases where there are words in the lexicon that do not occur in the word embeddings file. This trimmed lexicon can then be used in the actual application to avoid situations where the model cannot generate a hint for a word because it has never seen it before.
 
 To apply the filtering to an existing word embeddings file, run:
 ```shell
