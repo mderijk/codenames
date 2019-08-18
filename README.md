@@ -2,7 +2,7 @@
 
 # Requirements
 
-Python 3.6 (or higher)
+Python 3.6 (or higher)  
 CzEng 1.7
 
 
@@ -10,12 +10,12 @@ CzEng 1.7
 
 ## Web application
 
-All relevant code for the web application can be found in the `website/` directory.
-To setup the web application in a new location, you should:
-- put all the files in the `website/` directory in the directory where you want to host the application
-- generate the models that you want to use and place them in the server/data/ folder
+All relevant code for the web application can be found in the `website` directory.
+To setup the web application in a new location, you will need to:
+- put all the files in the `website` directory in the directory where you want to host the application
+- generate the models that you want to use and place them in the `server/data` folder
 - place the trimmed lexicon files in `server/data/lexicons` if they were generated
-- create a virtual environment in the `server/venv` folder and install the gensim package (see below)
+- create a virtual environment in the `server/venv` folder and install the gensim package (see below for more detail)
 - configure the application by setting up the correct generators for each model in `server/codenames/generators_config.py` and adding servers to run the generators in `server/codenames/config.py`
 
 To start the application, simply run:
@@ -30,7 +30,7 @@ To stop the application, run:
 > python3 stop_servers.py
 ```
 
-### Create virtual environment
+### Create virtual environment and install gensim
 
 Windows
 ```shell
@@ -49,7 +49,7 @@ Linux
 ## CzEng
 
 CzEng deserves a special mention, because it is used extensively in the creation of the models.
-In order to create any of the models, you will need to download [CzEng 1.6](https://ufal.mff.cuni.cz/czeng) and place the unzipped tar files in the models/data/czeng directory. (nested directories are no problem for the application)
+In order to create any of the models, you will need to download [CzEng 1.6](https://ufal.mff.cuni.cz/czeng) and place the unzipped tar files in the `models/data/czeng` directory. (nested directories are no problem for the application)
 The conversion to CzEng 1.7 is handled by the application itself in `czeng_faulty_sections.py` and does not need to be performed manually.
 
 ## Lexicons
@@ -60,7 +60,7 @@ Some of the models will produce a trimmed lexicon if the lexicon contains words 
 
 ## Word embedding models
 
-FastText word embeddings can be downloaded from: [https://github.com/facebookresearch/fastText/blob/master/docs/pretrained-vectors.md]
+FastText word embeddings can be downloaded from: https://github.com/facebookresearch/fastText/blob/master/docs/pretrained-vectors.md
 
 We apply several filters to the word embeddings file, only including words which are:
 - alphabetic
@@ -77,7 +77,7 @@ To apply the filtering to an existing word embeddings file, run:
 > python3 word_embeddings/filter.py <word embeddings file> <new word embeddings file> <language> <top n>
 ```
 
-For example:
+Example:
 ```shell
 > cd models
 > python3 word_embeddings/filter.py data/wiki.en/wiki.en.vec data/wiki.en/wiki-czeng-filtered-top-10000.en.vec en 10000
@@ -98,7 +98,7 @@ The following is a list of features that could be worthwhile to implement in the
 - New models
 - Support for multi-word expressions (e.g. scuba diver, ice cream, etc.)
 - Achievements (to increase player engagement)
-- Leaderboard based on a player's last \10-20 games (only worthwhile if we can increase the average winrate, in other words, if we have better models)
+- Leaderboard based on a player's last 10-20 games (only worthwhile if we can increase the average winrate, in other words, if we have better models)
 
 ## Code quality
 
