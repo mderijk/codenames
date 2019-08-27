@@ -1,0 +1,13 @@
+
+#username-form {
+	margin-top: 20%;
+}
+
+#username-form fieldset {
+	padding: 1em;
+	border-radius: 10px;
+}
+
+#username-form legend {
+	padding: 0 0.5em;
+}

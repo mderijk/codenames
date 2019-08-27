@@ -1,0 +1,51 @@
+
+html {
+	height: 100%;
+}
+
+body {
+	height: 100%;
+	max-width: 1100px;
+	line-height: 1.7em;
+	font-size: 16px;
+	margin: 0 auto;
+}
+
+.fill {
+	display: block;
+	height: 4em;
+}
+
+#status-bar {
+	position: fixed;
+	top: 0;
+	right: 0;
+	height: 1.7em;
+	width: 20em;
+	background: linear-gradient(60deg, transparent 0 2em, black 2em 100%);
+	color: white;
+	padding: 1em;
+	padding-left: 3em;
+	transition: color 0.2 ease;
+}
+
+.blink {
+	color: black;
+	animation: blinker 4s linear 0.5s infinite backwards;
+}
+
+@keyframes blinker {
+	0% { color: rgba(255, 255, 255, 0); }
+	1% { color: rgba(255, 255, 255, 0.1); }
+	50% { color: rgba(255, 255, 255, 1); }
+	100% { color: rgba(255, 255, 255, 0.1); }
+}
+
+h1 {
+	padding-top: 20%;
+	margin: 0;
+}
+
+input:disabled {
+	color: #555555;
+}

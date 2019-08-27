@@ -1,0 +1,111 @@
+
+#board-screen {
+	font-size: 1.65em;
+}
+
+#banner {
+	height: 1em;
+}
+
+#board {
+	margin: 0.5em 0;
+}
+
+#board .card {
+	display: inline-block;
+	height: 115px;
+	width: 200px;
+	cursor: pointer;
+	background-color: grey;
+	font-family: Helvetica, Arial;
+	line-height: 115px;
+	text-align: center;
+	vertical-align: middle;
+	padding: 0;
+	margin: 10px;
+	box-sizing: border-box;
+	transition: background-color 0.2s ease-in;
+}
+
+#board .card.blue {
+	background-color: #AAAAFF;
+}
+
+#board .card.red {
+	background-color: #FFAAAA;
+}
+
+#board .card.neutral {
+	background-color: #FADFAA;
+}
+
+#board .card.assassin {
+	background-color: black;
+	color: white;
+}
+
+#board .card.blue.post-game {
+	background-color: unset;
+	background: linear-gradient(130deg, #AAAAFF 0 20%, grey 20% 100%);
+}
+
+#board .card.red.post-game {
+	background: linear-gradient(130deg, #FFAAAA 0 20%, grey 20% 100%);
+}
+
+#board .card.neutral.post-game {
+	background: linear-gradient(130deg, #FADFAA 0 20%, grey 20% 100%);
+}
+
+#board .card.assassin.post-game {
+	background: linear-gradient(130deg, black 0 20%, grey 20% 100%);
+	color: black;
+}
+
+#current-hint {
+	font-weight: bold;
+}
+
+#hints {
+	font-size: 0.8em;
+	margin: 0.5em 0;
+	margin-left: -1em;
+}
+
+#hints li {
+	float: left;
+	min-width: 40%;
+	margin: 0;
+	margin-left: 30px;
+	list-style-type: circle;
+}
+
+.winner {
+	color: yellowgreen;
+}
+
+.loser {
+	color: firebrick;
+}
+
+.half-width {
+	width: 50%;
+}
+
+.left {
+	float: left;
+}
+
+.right {
+	width: 50%;
+	float: right;
+	text-align: right;
+}
+
+.button {
+	display: inline-block;
+}
+
+.button + .button {
+	margin-left: 0.2em;
+}

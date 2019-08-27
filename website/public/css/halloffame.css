@@ -1,0 +1,50 @@
+
+#hall-of-fame-header {
+	padding: 3em 0 1em;
+}
+
+#hall-of-fame {
+	width: 100%;
+	line-height: 1rem;
+	text-align: left;
+	margin-bottom: 2em;
+}
+
+#hall-of-fame th {
+	border-bottom: 2px solid black;
+	padding: 0.8em 0.5em;
+	word-wrap: anywhere;
+}
+
+#hall-of-fame th:nth-child(1n+2) {
+	width: 9.4%;
+}
+
+#hall-of-fame td {
+	word-wrap: anywhere;
+}
+
+#hall-of-fame td.rank {
+	padding: 0.3em 0.5em;
+	text-align: center;
+}
+
+#hall-of-fame td.score {
+	padding: 0.3em 0 0.3em 0.5em;
+}
+
+#hall-of-fame td.username {
+	padding: 0.3em 0.5em;
+}
+
+#hall-of-fame td.username.user {
+	font-weight: bold;
+}
+
+#hall-of-fame tr:nth-child(2) td {
+	padding-top: 0.5em;
+}
+
+#hall-of-fame td:nth-child(4n+6) {
+	border-left: 1px solid black;
+}

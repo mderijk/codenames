@@ -1,0 +1,98 @@
+
+#introduction {
+	max-width: 1100px;
+	padding: 0 1em;
+	margin: 0 auto;
+	overflow: auto;
+}
+
+#how-to-play {
+	text-align: justify;
+}
+
+#explanation-cards {
+	float: right;
+	width: 290px;
+	margin-left: 1.5em;
+	text-align: center;
+}
+
+#explanation-cards .card-wrapper {
+	display: inline-block;
+	width: 125px;
+	margin: 0.3em 10px;
+}
+
+#explanation-cards .card-wrapper.full-width {
+	margin: 0.3em 25%;
+}
+
+#explanation-cards .card {
+	display: inline-block;
+	height: 70px;
+	width: 125px;
+	background-color: grey;
+	font-family: Helvetica, Arial;
+	line-height: 70px;
+	text-align: center;
+	vertical-align: middle;
+	padding: 0;
+	box-sizing: border-box;
+	transition: background-color 0.2s ease-in;
+}
+
+#explanation-cards .card.blue {
+	background-color: #AAAAFF;
+}
+
+#explanation-cards .card.red {
+	background-color: #FFAAAA;
+}
+
+#explanation-cards .card.neutral {
+	background-color: #FADFAA;
+}
+
+#explanation-cards .card.assassin {
+	background-color: black;
+	color: white;
+}
+
+#menu-wrapper {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	min-height: 20%;
+	background-color: white;
+}
+
+#menu {
+	margin: 0 auto;
+	text-align: center;
+}
+
+#menu li {
+	display: inline-block;
+	height: 115px;
+	width: 200px;
+	background-color: grey;
+	font-family: monospace;
+	font-size: 1.4em;
+	line-height: 115px;
+	list-style-type: none;
+	text-align: center;
+	vertical-align: center;
+	padding: 0;
+	margin: 10px;
+	box-sizing: border-box;
+}
+
+.bottom-fill {
+	position: absolute;
+	display: block;
+	min-height: 20%;
+	height: 115px;
+	width: 1em;
+	margin: 10px;
+}
