@@ -32,6 +32,8 @@ To stop the application, run:
 
 ### Create virtual environment and install gensim
 
+Internally the application uses a virtual environment with gensim, which can be setup in the following way:
+
 Windows
 ```shell
 > cd server
@@ -45,6 +47,17 @@ Linux
 > python3 -m venv venv
 > venv/bin/python.exe -m pip install gensim
 ```
+
+### Surviving restarts
+
+If you have a server that shuts down or reboots occasionally, you can create a file `server/start_servers.sh`:
+```shell
+cd /path/to/website/server
+python3 start_servers.py
+```
+open a crontab file `crontab -e` and add the line `@reboot /path/to/website/server/start_servers.sh`.
+
+For Windows the idea is the same, create a batch script like the shell script above and add a task for executing the batch script on system start with schtasks.exe.
 
 ## CzEng
 
