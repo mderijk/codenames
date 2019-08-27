@@ -18,6 +18,8 @@ To setup the web application in a new location, you will need to:
 - create a virtual environment in the `server/venv` folder and install the gensim package (see below for more detail)
 - configure the application by setting up the correct generators for each model in `server/codenames/generators_config.py` and adding servers to run the generators in `server/codenames/config.py`
 
+Alternatively, you can use the default config files and extract the `.tar.gz` files in `server/data/wiki.cs/`, `server/data/wiki.en/` and `server/data/collocations/`.
+
 To start the application, simply run:
 ```shell
 > cd server
