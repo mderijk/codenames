@@ -18,7 +18,7 @@ To setup the web application in a new location, you will need to:
 - create a virtual environment in the `server/venv` folder and install the gensim package (see below for more detail)
 - configure the application by setting up the correct generators for each model in `server/codenames/generators_config.py` and adding servers to run the generators in `server/codenames/config.py`
 
-Alternatively, you can use the default config files and extract the `.tar.gz` files in `server/data/wiki.cs/`, `server/data/wiki.en/` and `server/data/collocations/`.
+Alternatively, you can use the default config files and extract the `.tar.gz` files in `server/data/wiki.cs`, `server/data/wiki.en` and `server/data/collocations`.
 
 To start the application, simply run:
 ```shell
@@ -100,8 +100,14 @@ Example:
 
 ## Collocation models
 
-...
+To create collocation models from the data in the czeng corpus, run:
+```shell
+> cd models
+> python3 collocations/filter.py cz
+> python3 collocations/filter.py en
+```
 
+This generates both sentence-level as well as dependency-level collocations.
 
 # Future direction
 
@@ -111,7 +117,7 @@ The following is a list of features that could be worthwhile to implement in the
 
 - Two player version (requires robust networking code and some structural changes to avoid race conditions)
 - New models
-- Support for multi-word expressions (e.g. scuba diver, ice cream, etc.)
+- Support for multi-word expressions in word embeddings (e.g. scuba diver, ice cream, etc.)
 - Achievements (to increase player engagement)
 - Leaderboard based on a player's last 10-20 games (only worthwhile if we can increase the average winrate, i.e. if we have better models)
 
