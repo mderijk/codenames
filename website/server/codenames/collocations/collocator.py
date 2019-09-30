@@ -10,33 +10,22 @@ class CollocationFinder:
 		if verbose:
 			print('Counting unigrams and bigrams..')
 		
-		multi_word_expressions_in_lexicon = any(' ' in word for word in lexicon)
-		
-		for sentence in sentences:
-			self.unigram_frequencies.update(sentence)
-			
-			relevant_words = (word for word in sentence if word in lexicon)
-			
-			if multi_word_expressions_in_lexicon:
-				# make sure that unigrams and bigrams for words with spaces (e.g. 'ice cream') are generated as well (only as word1, because the hint (word2) should always be a single word, i.e. should not contain spaces)
-				grouped_words = map(' '.join, zip(sentence, sentence[1:]))
-				for word_group in grouped_words:
-					if word_group in lexicon:
-						relevant_words = list(relevant_words)
-						self.unigram_frequencies[word_group] += 1
-						relevant_words.append(word_group)
-			
-			# add bigrams
-			for word1 in relevant_words:
-				for word2 in sentence:
-					if word1 != word2: # avoid duplicates because we are not allowed to use the word itself as a hint anyway
-						bigram = (word1, word2)
-						self.bigram_frequencies[bigram] += 1
+		self.count_frequencies(sentences, lexicon)
 		
 		if verbose:
 			print('Calculating probabilities..')
 		
 		self.calculate_probabilities()
+	
+	def count_frequencies(self, sentences, lexicon):
+		for sentence in sentences:
+			self.unigram_frequencies.update(sentence)
+			
+			# add bigrams
+			for word1, word2 in zip(sentence, sentence[1:]):
+				if word1 in lexicon and word1 != word2: # avoid duplicates because we are not allowed to use the word itself as a hint anyway
+					bigram = (word1, word2)
+					self.bigram_frequencies[bigram] += 1
 	
 	def calculate_probabilities(self):
 		total_unigram_count = sum(self.unigram_frequencies.values())
@@ -101,14 +90,34 @@ class CollocationFinder:
 		return collocator
 
 
+class SentenceLevelCollocationFinder(CollocationFinder):
+	def count_frequencies(self, sentences, lexicon):
+		multi_word_expressions_in_lexicon = any(' ' in word for word in lexicon)
+		
+		for sentence in sentences:
+			self.unigram_frequencies.update(sentence)
+			
+			relevant_words = (word for word in sentence if word in lexicon)
+			
+			if multi_word_expressions_in_lexicon:
+				# make sure that unigrams and bigrams for words with spaces (e.g. 'ice cream') are generated as well (only as word1, because the hint (word2) should always be a single word, i.e. should not contain spaces)
+				grouped_words = map(' '.join, zip(sentence, sentence[1:]))
+				for word_group in grouped_words:
+					if word_group in lexicon:
+						relevant_words = list(relevant_words)
+						self.unigram_frequencies[word_group] += 1
+						relevant_words.append(word_group)
+			
+			# add bigrams
+			for word1 in relevant_words:
+				for word2 in sentence:
+					if word1 != word2: # avoid duplicates because we are not allowed to use the word itself as a hint anyway
+						bigram = (word1, word2)
+						self.bigram_frequencies[bigram] += 1
+
+
 class DependencyBasedCollocationFinder(CollocationFinder):
-	def __init__(self, sentences, lexicon, verbose=False):
-		self.unigram_frequencies = Counter()
-		self.bigram_frequencies = Counter()
-		
-		if verbose:
-			print('Counting unigrams and bigrams..')
-		
+	def count_frequencies(self, sentences, lexicon):
 		for sentence, dependencies in sentences:
 			self.unigram_frequencies.update(sentence)
 			
@@ -129,8 +138,3 @@ class DependencyBasedCollocationFinder(CollocationFinder):
 				if word1 != word2: # avoid duplicates because we are not allowed to use the word itself as a hint anyway
 					bigram = (word1, word2)
 					self.bigram_frequencies[bigram] += 1
-		
-		if verbose:
-			print('Calculating probabilities..')
-		
-		self.calculate_probabilities()
