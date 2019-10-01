@@ -3,12 +3,12 @@
 from . import servers
 
 word2vec_embeddings_model_cz = 'data/wiki.cs/wiki-czeng-filtered-top-10000.cs.vec'
-collocations_model_cz = 'data/collocations/collocations_filtered_cz_v1.0.col'
-dependency_based_collocations_model_cz = 'data/collocations/dependency_based_collocations_filtered_cz_v1.0.col'
+collocations_model_cz = 'data/collocations/sentence_level_collocations_filtered_cz_v1.0.col'
+dependency_based_collocations_model_cz = 'data/collocations/dependency_level_collocations_filtered_cz_v1.0.col'
 
 word2vec_embeddings_model_en = 'data/wiki.en/wiki-czeng-filtered-top-10000.en.vec'
-collocations_model_en = 'data/collocations/collocations_filtered_en_v1.0.col'
-dependency_based_collocations_model_en = 'data/collocations/dependency_based_collocations_filtered_en_v1.0.col'
+collocations_model_en = 'data/collocations/sentence_level_collocations_filtered_en_v1.0.col'
+dependency_based_collocations_model_en = 'data/collocations/dependency_level_collocations_filtered_en_v1.0.col'
 
 GENERATORS = {
 	'word2vec_simple_cz_v1.0': {
