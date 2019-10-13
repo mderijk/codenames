@@ -25,14 +25,6 @@ def weighted_average(*word_dists, weights=(1, -1, -0.5, -2)):
 	combined_dists = dists_sum / len(word_dists)
 	return combined_dists
 
-# NOTE: this function is the exact same as the one above, except for the fact that the above function supports a weights argument (more flexible) and expects an array of numpy arrays as word_dists argument instead of an array of regular python lists
-def weighted_score(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, weights=(1, -1, -0.2, -5)):
-	weighted_score = weights[0] * (sum(own_team_scores) / len(own_team_scores)) \
-			+ weights[1] * (sum(enemy_team_scores) / len(enemy_team_scores)) \
-			+ weights[2] * (sum(neutral_scores) / len(neutral_scores)) \
-			+ weights[3] * (sum(assassin_scores) / len(assassin_scores))
-	return weighted_score
-
 def max_score(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, weights=(1, 1, 1, 1)):
 	own_team_scores, enemy_team_scores, neutral_scores, assassin_scores = \
 			(map(lambda x: x * weight, scores) for weight, scores in zip(weights, [own_team_scores, enemy_team_scores, neutral_scores, assassin_scores]))
@@ -69,6 +61,33 @@ def combined_max_score(own_team_scores, enemy_team_scores, neutral_scores, assas
 		combined_max_score += score
 	
 	return combined_max_score
+
+def top_n(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, n=1, weights=(1, 1, 1, 1)):
+	own_team_scores, enemy_team_scores, neutral_scores, assassin_scores = \
+			(list(map(lambda x: x * weight, scores)) for weight, scores in zip(weights, [own_team_scores, enemy_team_scores, neutral_scores, assassin_scores]))
+	
+	# find highest negative scoring word
+	threshold = max(enemy_team_scores + neutral_scores + assassin_scores)
+	
+	# rank the list by score (descendingly)
+	own_team_scores.sort(reverse=True)
+	
+	# sum the top-n highest scoring own words that are equal to or above the threshold
+	combined_max_score = 0
+	for score in own_team_scores[:n]:
+		if score >= threshold:
+			combined_max_score += score
+	
+	return combined_max_score
+
+def top_1(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, weights=(1, 1, 1, 1)):
+	return top_n(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, n=1, weights=weights)
+
+def top_2(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, weights=(1, 1, 1, 1)):
+	return top_n(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, n=2, weights=weights)
+
+def top_3(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, weights=(1, 1, 1, 1)):
+	return top_n(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, n=3, weights=weights)
 
 def t_score(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, weights=(1, 1, 1, 1)):
 	"""
