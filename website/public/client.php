@@ -1,7 +1,10 @@
 <?php
-$PYTHON_PATH = 'venv/bin/python'; # Linux: 'venv/bin/python'
 $SERVER_DIRECTORY = '../server';
 $SERVER_FILE = 'server.py';
+
+// select correct path to python executable (the file structure of python virtual environments differs between operating systems)
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') $PYTHON_PATH = 'venv\Scripts\python'; # Windows
+else $PYTHON_PATH = 'venv/bin/python'; # Linux
 
 if (!empty($input = file_get_contents('php://input')))
 {
