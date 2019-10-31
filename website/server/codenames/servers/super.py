@@ -2,7 +2,9 @@
 # Ladies and gentlemen, may I present to you, the Super Generator! *hesitant applause*
 # 
 # A SuperHintGenerator accepts a list of generators and thresholds as its model, which tells the super generator which other generators to call and which generator answer to accept if it passes the threshold.
+# NOTE: the models used by any SuperHintGenerator must be run on a separate server, otherwise that server instance will block when the SuperHintGenerator is queried.
 
+import os
 import re
 
 from ..ai import AI
@@ -21,7 +23,7 @@ class SuperHintGenerator(HintGenerator):
 				open(hints_log, 'w', encoding='utf-8').close()
 				
 				# ask for hint
-				hint = ai.generateHint('superhintgenerator', own_team_words, enemy_team_words, neutral_words, assassin_words)
+				hint = ai.generateHint('superhintgenerator', positive_words, negative_words, neutral_words, assassin_words, previous_hints)
 				
 				# prevent crashes
 				if not hint:
@@ -32,7 +34,7 @@ class SuperHintGenerator(HintGenerator):
 				own_card_ratings = board_ratings[0]
 				
 				# make decision
-				rating = own_card_ratings[0]
+				rating = own_card_ratings[0][1]
 				if rating >= threshold or rating is None:
 					self.log.log('Generated hint \'{}\' with rating \'{}\''.format(hint, overall_rating))
 					self.log.log('Used model \'{}\' and crossed threshold \'{}\''.format(generator_name, threshold))

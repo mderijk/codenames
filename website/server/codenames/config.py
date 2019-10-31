@@ -12,9 +12,9 @@ SERVERS = {
 			'generators': [
 #				'word2vec_simple_cz_v1.0',
 #				'word2vec_weighted_combined_max_score_cz_v1.0',
-				'word2vec_weighted_top_1_cz_v1.0',
-				'word2vec_weighted_top_2_cz_v1.0',
-				'word2vec_weighted_top_3_cz_v1.0',
+#				'word2vec_weighted_top_1_cz_v1.0',
+#				'word2vec_weighted_top_2_cz_v1.0',
+#				'word2vec_weighted_top_3_cz_v1.0',
 			],
 			'log_directory': hints_log_directory,
 		},
@@ -25,9 +25,9 @@ SERVERS = {
 			'generators': [
 #				'word2vec_simple_en_v1.0',
 #				'word2vec_weighted_combined_max_score_en_v1.0',
-				'word2vec_weighted_top_1_en_v1.0',
-				'word2vec_weighted_top_2_en_v1.0',
-				'word2vec_weighted_top_3_en_v1.0',
+#				'word2vec_weighted_top_1_en_v1.0',
+#				'word2vec_weighted_top_2_en_v1.0',
+#				'word2vec_weighted_top_3_en_v1.0',
 			],
 			'log_directory': hints_log_directory,
 		},
@@ -56,9 +56,9 @@ SERVERS = {
 			'generators': [
 #				'dependency_based_collocations_combined_max_score_cz_v1.0',
 #				'dependency_based_collocations_mean_difference_cz_v1.0',
-#				'dependency_based_collocations_top_1_cz_v1.0',
-#				'dependency_based_collocations_top_2_cz_v1.0',
-#				'dependency_based_collocations_top_3_cz_v1.0',
+				'dependency_based_collocations_top_1_cz_v1.0',
+				'dependency_based_collocations_top_2_cz_v1.0',
+				'dependency_based_collocations_top_3_cz_v1.0',
 			],
 			'log_directory': hints_log_directory,
 		},
@@ -69,30 +69,44 @@ SERVERS = {
 			'generators': [
 #				'dependency_based_collocations_combined_max_score_en_v1.0',
 #				'dependency_based_collocations_mean_difference_en_v1.0',
-#				'dependency_based_collocations_top_1_en_v1.0',
-#				'dependency_based_collocations_top_2_en_v1.0',
-#				'dependency_based_collocations_top_3_en_v1.0',
+				'dependency_based_collocations_top_1_en_v1.0',
+				'dependency_based_collocations_top_2_en_v1.0',
+				'dependency_based_collocations_top_3_en_v1.0',
+			],
+			'log_directory': hints_log_directory,
+		},
+	},
+	'super_cz': {
+		'socket': ('localhost', 3066),
+		'config': {
+			'generators': [
+				'dependency_based_collocations_top_combined_cz_v1.0',
+			],
+			'log_directory': hints_log_directory,
+		},
+	},
+	'super_en': {
+		'socket': ('localhost', 3166),
+		'config': {
+			'generators': [
+				'dependency_based_collocations_top_combined_en_v1.0',
 			],
 			'log_directory': hints_log_directory,
 		},
 	},
 }
 
-GENERATOR_NAMES = [generator_name for _, server_data in SERVERS.items() for generator_name in server_data['config']['generators']]
+# active AI
+AI_NAMES = {
+	'dependency_based_collocations_top_combined_cz_v1.0': 'AI 0',
+	
+	'dependency_based_collocations_top_combined_en_v1.0': 'AI 0',
+}
+
+GENERATOR_NAMES = [generator_name for _, server_data in SERVERS.items() for generator_name in server_data['config']['generators'] if generator_name in AI_NAMES]
 GENERATOR_NAMES_BY_LANGUAGE = {
 	language: [generator_name for generator_name in GENERATOR_NAMES if '_{}_'.format(language) in generator_name]
 	for language in LANGUAGES
-}
-
-# names of active AI (purely cosmetic)
-AI_NAMES = {
-	'word2vec_weighted_top_1_cz_v1.0': 'AI 0',
-	'word2vec_weighted_top_2_cz_v1.0': 'AI 1',
-	'word2vec_weighted_top_3_cz_v1.0': 'AI 2',
-	
-	'word2vec_weighted_top_1_en_v1.0': 'AI 0',
-	'word2vec_weighted_top_2_en_v1.0': 'AI 1',
-	'word2vec_weighted_top_3_en_v1.0': 'AI 2',
 }
 
 GENERATOR_SOCKETS = {
