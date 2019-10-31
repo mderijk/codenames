@@ -9,7 +9,7 @@ class HintGenerator:
 	
 	def _load_model(self, model_name):
 		if model_name not in self.model_cache:
-			self.model_cache[model_name] = self.model_loader(model_name)
+			self.model_cache[model_name] = self.__class__.model_loader(model_name)
 		return self.model_cache[model_name]
 	
 	def generateHints(self, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=20):
