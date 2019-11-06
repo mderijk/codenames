@@ -17,17 +17,17 @@ GENERATORS = {
 	'dependency_based_collocations_top_combined_cz_v1.0': {
 		'class': servers.super.SuperHintGenerator,
 		'model': (
-			('dependency_based_collocations_top_3_cz_v1.0', 10.385226416980178),
-			('dependency_based_collocations_top_2_cz_v1.0', 10.811084816565739),
-			('dependency_based_collocations_top_1_cz_v1.0', None), # default to this method if none of the thresholds are met
+			('dependency_based_collocations_top_3_cz_v1.0', 3, 9.099547653145802),
+			('dependency_based_collocations_top_2_cz_v1.0', 2, 9.997971724860129),
+			('dependency_based_collocations_top_1_cz_v1.0', 1, None), # default to this method if none of the thresholds are met
 		),
 	},
 	'dependency_based_collocations_top_combined_en_v1.0': {
 		'class': servers.super.SuperHintGenerator,
 		'model': (
-			('dependency_based_collocations_top_3_en_v1.0', 8.075845432375106),
-			('dependency_based_collocations_top_2_en_v1.0', 9.899816571992895),
-			('dependency_based_collocations_top_1_en_v1.0', None), # default to this method if none of the thresholds are met
+			('dependency_based_collocations_top_3_en_v1.0', 3, 7.082347917837459),
+			('dependency_based_collocations_top_2_en_v1.0', 2, 8.227820505840697),
+			('dependency_based_collocations_top_1_en_v1.0', 1, None), # default to this method if none of the thresholds are met
 		),
 	},
 	

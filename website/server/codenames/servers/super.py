@@ -13,7 +13,7 @@ from .hintgenerator import HintGenerator
 class SuperHintGenerator(HintGenerator):
 	def generateHint(self, game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=20):
 		with self.logger.openLog(game_id) as self.log:
-			for generator_name, threshold in self.model:
+			for generator_name, top_n, threshold in self.model:
 				# create connection with AI
 				ai = AI(generator_name)
 				
@@ -23,7 +23,7 @@ class SuperHintGenerator(HintGenerator):
 				open(hints_log, 'w', encoding='utf-8').close()
 				
 				# ask for hint
-				hint = ai.generateHint('superhintgenerator', positive_words, negative_words, neutral_words, assassin_words, previous_hints)
+				hint = ai.generateHint('superhintgenerator', positive_words, negative_words, neutral_words, assassin_words, n=n, previous_hints=previous_hints)
 				
 				# prevent crashes
 				if not hint:
@@ -34,10 +34,12 @@ class SuperHintGenerator(HintGenerator):
 				own_card_ratings = board_ratings[0]
 				
 				# make decision
-				rating = own_card_ratings[0][1]
+				ratings = [rating for word, rating in own_card_ratings[:top_n]]
+				rating = sum(ratings) / len(ratings)
 				if rating >= threshold or rating is None:
 					self.log.log('Generated hint \'{}\' with rating \'{}\''.format(hint, overall_rating))
 					self.log.log('Used model \'{}\' and crossed threshold \'{}\''.format(generator_name, threshold))
+					self.log.log('Weighted scores from', ai.name, 'for', hint, *board_ratings)
 					return hint
 
 def parse_card_rating_string(string):
