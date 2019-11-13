@@ -44,7 +44,7 @@ class SinglePlayerGame(Game):
 	def endTurn(self):
 		super().endTurn()
 		
-		if self.hint == False: # if the generateHint() method returns False, we know it was the dummy team's spymaster, so we simulate the dummy teams turn
+		if self.hint == (False, None): # if the generateHint() method returns (False, None), we know it was the dummy team's spymaster, so we simulate the dummy teams turn
 			# find one of the dummy team's cards and flip it over
 			positive_cards, negative_cards, neutral_cards, assassin_cards = self.getActiveCardsByType()
 			card = random.choice(positive_cards)

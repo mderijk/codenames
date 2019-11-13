@@ -6,9 +6,10 @@ from . import weighting
 class CollocationsHintGenerator(HintGenerator):
 	model_loader = collocations.CollocationFinder.load
 	
-	def __init__(self, model, *args, frequency_cutoff=100, weighting_method=weighting.t_score, weights=None, **kwargs):
+	def __init__(self, model, *args, frequency_cutoff=100, include_number=True, weighting_method=weighting.t_score, weights=None, **kwargs):
 		super().__init__(model, *args, **kwargs)
 		self.frequency_cutoff = frequency_cutoff
+		self.include_number = include_number
 		self.weighting_method = weighting_method
 		self.weights = weights
 	
@@ -40,15 +41,17 @@ class CollocationsHintGenerator(HintGenerator):
 		return zip(words, weighted_scores)
 	
 	def generateHint(self, game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=20):
-		hint = super().generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=n)
+		hint, number = super().generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=n)
+		pmi_scores = [[(word, score) for word, score in zip(word_group, scores)] for word_group, scores in zip([positive_words, negative_words, neutral_words, assassin_words], self.individual_scores_dict[hint])]
+		if self.include_number:
+			number = self.calculate_number(*pmi_scores)
 		
 		with self.logger.openLog(game_id) as self.log:
-			pmi_scores = [[(word, score) for word, score in zip(word_group, scores)] for word_group, scores in zip([positive_words, negative_words, neutral_words, assassin_words], self.individual_scores_dict[hint])]
 			self.log.log('PMI scores for', hint, *pmi_scores)
 		
 		self.individual_scores_dict = None
 		
-		return hint
+		return hint, number
 
 class DependencyBasedCollocationsHintGenerator(CollocationsHintGenerator):
 	model_loader = collocations.DependencyBasedCollocationFinder.load

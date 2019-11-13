@@ -117,8 +117,15 @@ function Game(client, application) {
 	}
 	
 	this.addHint = function(hint) {
-		var old_hint = this.current_hint.textContent;
-		this.current_hint.textContent = hint;
+		var word = hint[0],
+			number = hint[1],
+			old_hint = this.current_hint.textContent;
+		
+		if (number === null) {
+			this.current_hint.textContent = word;
+		} else {
+			this.current_hint.textContent = word + ', ' + number;
+		}
 		
 		if (old_hint !== '') {
 			var hint_list_item = document.createElement('li');

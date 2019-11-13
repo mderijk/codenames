@@ -47,7 +47,7 @@ function Client() {
 	
 	this.createSession = function(id, username, language) {
 		this.session = {}
-		this.session.version = '1.2';
+		this.session.version = '1.3';
 		this.session.id = id;
 		this.session.username = username;
 		this.session.language = language;

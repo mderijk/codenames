@@ -23,24 +23,24 @@ class SuperHintGenerator(HintGenerator):
 				open(hints_log, 'w', encoding='utf-8').close()
 				
 				# ask for hint
-				hint = ai.generateHint('superhintgenerator', positive_words, negative_words, neutral_words, assassin_words, n=n, previous_hints=previous_hints)
+				hint_word, hint_number = ai.generateHint('superhintgenerator', positive_words, negative_words, neutral_words, assassin_words, n=n, previous_hints=previous_hints)
 				
 				# prevent crashes
-				if not hint:
+				if not hint_word:
 					return None
 				
 				# inspect superhintgenerator.log and steal ratings
-				overall_rating, board_ratings = extract_hint_rating_and_board(hints_log, hint)
+				overall_rating, board_ratings = extract_hint_rating_and_board(hints_log, hint_word)
 				own_card_ratings = board_ratings[0]
 				
 				# make decision
 				ratings = [rating for word, rating in own_card_ratings[:top_n]]
 				rating = sum(ratings) / len(ratings)
 				if rating >= threshold or rating is None:
-					self.log.log('Generated hint \'{}\' with rating \'{}\''.format(hint, overall_rating))
+					self.log.log('Generated hint \'{}\' with rating \'{}\''.format(hint_word, overall_rating))
 					self.log.log('Used model \'{}\' and crossed threshold \'{}\''.format(generator_name, threshold))
-					self.log.log('Weighted scores from', ai.name, 'for', hint, *board_ratings)
-					return hint
+					self.log.log('Weighted scores from', ai.name, 'for', hint_word, *board_ratings)
+					return hint_word, hint_number
 
 def parse_card_rating_string(string):
 	cards = zip([match.group(1) for match in re.finditer('\'(\w+)\'', string)], [float(match.group()) for match in re.finditer('\d+(\.\d+)?', string)])

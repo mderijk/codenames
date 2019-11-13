@@ -29,8 +29,12 @@ class HintServer:
 			positive_words, negative_words, neutral_words, assassin_words = request['positive_words'], request['negative_words'], request['neutral_words'], request['assassin_words']
 			previous_hints = request['previous_hints']
 			game_id = request['game_id']
-			word = generator.generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints)
-			response = word # TODO: return proper response object so you can return 'error' as well.
+			word, number = generator.generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints)
+			response = {
+				'status': 'success',
+				'word': word,
+				'number': number,
+			}
 			return response
 		else:
 			print('{} got a request without action or action was not \'hint\'. ({})'.format(request['generator'], repr(request)), file=sys.stderr)

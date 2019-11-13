@@ -62,7 +62,7 @@ function Application(client, wizard) {
 	
 	this.init = function() {
 		// if there is a session, verify client version that the session was created on
-		if (client.session !== null && (!client.session.version || client.session.version !== '1.2')) {
+		if (client.session !== null && (!client.session.version || client.session.version !== '1.3')) {
 			// incompatible version, delete old session
 			console.log('Session created on incompatible version, deleting old session.');
 			client.session = null;

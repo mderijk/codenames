@@ -103,10 +103,10 @@ class Game:
 		positive_words, negative_words, neutral_words, assassin_words = self.getActiveWordsByType()
 		
 		# generate hint and log it
-		previous_hints = [hint for hint in self.hints[self.initiative] if hint] # filter out potential None types generated when the hint servers where offline.
+		previous_hints = [(word, number) for word, number in self.hints[self.initiative] if word] # filter out potential None types generated when the hint servers were offline.
 		self.hint = current_team.spymaster.generateHint(self.id, positive_words, negative_words, neutral_words, assassin_words, previous_hints=previous_hints)
 		self.hints[self.initiative].append(self.hint)
-		self.history.append((self.turn, 'New hint for team {}: \'{}\'.'.format(self.initiative, self.hint)))
+		self.history.append((self.turn, 'New hint for team {}: \'{}\'. Relates to {} cards.'.format(self.initiative, *self.hint)))
 	
 	def endTurn(self):
 		self.turn += 1

@@ -38,10 +38,11 @@ class AI:
 		# close connection and return server response
 		try:
 			response = connection.recv()
+			response = (response['word'], response['number'])
 		except EOFError:
-			response = 'A significant error occurred while generating hints. Please contact the author. (Internal Server Error)' # TODO: create a "proper" response dict
+			response = 'A significant error occurred while generating hints. Please contact the author. (Internal Server Error)', None
 		except ConnectionResetError:
-			response = 'The server was reset while processing your request. (Internal Server Error)' # TODO: create a "proper" response dict
+			response = 'The server was reset while processing your request. (Internal Server Error)', None
 		connection.close()
 		
 		return response
@@ -51,7 +52,7 @@ class DummyAI(AI):
 		self.name = name
 	
 	def generateHint(self, *args, **kwargs):
-		return False
+		return (False, None)
 
 def main(argv):
 	if len(argv) > 2:

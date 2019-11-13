@@ -3,9 +3,10 @@ class HintGenerator:
 	model_cache = {}
 	model_loader = lambda x: x
 	
-	def __init__(self, model, logger):
+	def __init__(self, model, logger, max_hint_number=None):
 		self.model = self._load_model(model)
 		self.logger = logger
+		self.max_hint_number = max_hint_number
 	
 	def _load_model(self, model_name):
 		if model_name not in self.model_cache:
@@ -22,15 +23,23 @@ class HintGenerator:
 			while True:
 				potential_hints = self.generateHints(positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=n)
 				
+				previous_words = [word for word, number in previous_hints]
 				for hint, rating in potential_hints:
-					if all(map(lambda word: self.hint_filter(hint, word), positive_words + negative_words + neutral_words + assassin_words + previous_hints)):
+					if all(map(lambda word: self.hint_filter(hint, word), positive_words + negative_words + neutral_words + assassin_words + previous_words)):
 						self.log.log('Generated hint \'{}\' with rating \'{}\''.format(hint, rating))
-						return hint
+						return hint, None
 				
 				n += 20
 				
 				if n > 1000:
 					raise StopIteration('No suitable hint could be found.')
+	
+	def calculate_number(self, positive_words, negative_words, neutral_words, assassin_words):
+		highest_negative_rating = max(rating2 for _, rating2 in negative_words + neutral_words + assassin_words)
+		number_of_better_scoring_positive_words = sum(1 for _, rating in positive_words if rating >= highest_negative_rating) # "better scoring" means equal to or higher than the highest negative word
+		if self.max_hint_number is not None:
+			number_of_better_scoring_positive_words = min(self.max_hint_number, number_of_better_scoring_positive_words)
+		return number_of_better_scoring_positive_words
 	
 	@classmethod
 	def hint_filter(cls, hint, word):
