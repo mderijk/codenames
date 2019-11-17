@@ -17,26 +17,23 @@ class SuperHintGenerator(HintGenerator):
 				# create connection with AI
 				ai = AI(generator_name)
 				
-				# reset hints log before querying
-				hints_log_directory = os.path.join(self.logger.log_directory, '..', ai.name)
-				hints_log = os.path.join(hints_log_directory, 'superhintgenerator.log')
-				open(hints_log, 'w', encoding='utf-8').close()
-				
 				# ask for hint
-				hint_word, hint_number = ai.generateHint('superhintgenerator', positive_words, negative_words, neutral_words, assassin_words, n=n, previous_hints=previous_hints)
+				hint_word, hint_number = ai.generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, n=n, previous_hints=previous_hints)
 				
 				# prevent crashes
 				if not hint_word:
 					return None
 				
-				# inspect superhintgenerator.log and steal ratings
+				# inspect generator log file and steal ratings
+				hints_log_directory = os.path.join(self.logger.log_directory, '..', ai.name)
+				hints_log = os.path.join(hints_log_directory, '{}.log'.format(game_id))
 				overall_rating, board_ratings = extract_hint_rating_and_board(hints_log, hint_word)
 				own_card_ratings = board_ratings[0]
 				
 				# make decision
 				ratings = [rating for word, rating in own_card_ratings[:top_n]]
-				rating = sum(ratings) / len(ratings)
-				if rating >= threshold or rating is None:
+				rating = ratings[-1]
+				if threshold is None or rating >= threshold:
 					self.log.log('Generated hint \'{}\' with rating \'{}\''.format(hint_word, overall_rating))
 					self.log.log('Used model \'{}\' and crossed threshold \'{}\''.format(generator_name, threshold))
 					self.log.log('Weighted scores from', ai.name, 'for', hint_word, *board_ratings)

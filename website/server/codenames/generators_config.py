@@ -17,16 +17,16 @@ GENERATORS = {
 	'dependency_based_collocations_top_combined_cz_v1.0': {
 		'class': servers.super.SuperHintGenerator,
 		'model': (
-			('dependency_based_collocations_top_3_cz_v1.0', 3, 9.099547653145802),
-			('dependency_based_collocations_top_2_cz_v1.0', 2, 11.229515527815874),
+			('dependency_based_collocations_top_3_cz_v1.0', 3, 9.299208329296569),
+			('dependency_based_collocations_top_2_cz_v1.0', 2, 10.811084816565739),
 			('dependency_based_collocations_top_1_cz_v1.0', 1, None), # default to this method if none of the thresholds are met
 		),
 	},
 	'dependency_based_collocations_top_combined_en_v1.0': {
 		'class': servers.super.SuperHintGenerator,
 		'model': (
-			('dependency_based_collocations_top_3_en_v1.0', 3, 7.082347917837459),
-			('dependency_based_collocations_top_2_en_v1.0', 2, 8.754971664648176),
+			('dependency_based_collocations_top_3_en_v1.0', 3, 6.945942848881148),
+			('dependency_based_collocations_top_2_en_v1.0', 2, 9.653435486873398),
 			('dependency_based_collocations_top_1_en_v1.0', 1, None), # default to this method if none of the thresholds are met
 		),
 	},
