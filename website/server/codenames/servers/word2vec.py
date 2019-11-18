@@ -122,6 +122,10 @@ class ThresholdWeightedWord2vecHintGenerator(WeightedWord2vecHintGenerator):
 			self.weighting_method = weighting_method
 			self.max_hint_number = top_n
 			
+			# make sure we don't use top_n if there are less than n words on the board
+			if top_n > len(positive_words):
+				continue
+			
 			if threshold is None:
 				threshold = 0
 			self.threshold = threshold
