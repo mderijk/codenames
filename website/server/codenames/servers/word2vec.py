@@ -61,9 +61,10 @@ class AveragedWord2vecHintGenerator(Word2vecHintGenerator):
 		return hint, None
 
 class WeightedWord2vecHintGenerator(Word2vecHintGenerator):
-	def __init__(self, *args, include_number=True, weighting_method=weighting.combined_max_score, weights=None, **kwargs):
+	def __init__(self, *args, include_number=True, threshold=None, weighting_method=weighting.combined_max_score, weights=None, **kwargs):
 		super().__init__(*args, **kwargs)
 		self.include_number = include_number
+		self.threshold = threshold
 		self.weighting_method = weighting_method
 		self.weights = weights
 	
@@ -86,7 +87,10 @@ class WeightedWord2vecHintGenerator(Word2vecHintGenerator):
 		if self.weights is None:
 			combined_dists = weighting_method(*word_dists)
 		else:
-			combined_dists = weighting_method(*word_dists, weights=self.weights)
+			if self.threshold is None:
+				combined_dists = weighting_method(*word_dists, weights=self.weights)
+			else:
+				combined_dists = weighting_method(*word_dists, threshold=self.threshold, weights=self.weights)
 		
 		best = gensim.matutils.argsort(combined_dists, topn=n + len(all_words), reverse=True)
 		potential_hints = {self.model.index2word[sim]: float(combined_dists[sim]) for sim in best if not sim in all_words}

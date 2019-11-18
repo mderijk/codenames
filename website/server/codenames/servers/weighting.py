@@ -62,15 +62,19 @@ def combined_max_score(own_team_scores, enemy_team_scores, neutral_scores, assas
 	
 	return combined_max_score
 
-def top_n(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, n=1, weights=(1, 1, 1, 1)):
+def top_n(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, n=1, threshold=None, weights=(1, 1, 1, 1)):
 	own_team_scores, enemy_team_scores, neutral_scores, assassin_scores = \
 			(list(map(lambda x: x * weight, scores)) for weight, scores in zip(weights, [own_team_scores, enemy_team_scores, neutral_scores, assassin_scores]))
 	
-	# find highest negative scoring word
-	threshold = max(enemy_team_scores + neutral_scores + assassin_scores)
-	
 	# rank the list by score (descendingly)
 	own_team_scores.sort(reverse=True)
+	
+	# invalidate hints for which the nth highest scoring word is lower than the threshold
+	if own_team_scores[n] < threshold:
+		return 0
+	
+	# find highest negative scoring word
+	threshold = max(enemy_team_scores + neutral_scores + assassin_scores)
 	
 	# sum the top-n highest scoring own words that are equal to or above the threshold
 	combined_max_score = 0
@@ -80,14 +84,14 @@ def top_n(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, n
 	
 	return combined_max_score
 
-def top_1(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, weights=(1, 1, 1, 1)):
-	return top_n(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, n=1, weights=weights)
+def top_1(*args, **kwargs):
+	return top_n(*args, **kwargs, n=1)
 
-def top_2(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, weights=(1, 1, 1, 1)):
-	return top_n(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, n=2, weights=weights)
+def top_2(*args, **kwargs):
+	return top_n(*args, **kwargs, n=2)
 
-def top_3(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, weights=(1, 1, 1, 1)):
-	return top_n(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, n=3, weights=weights)
+def top_3(*args, **kwargs):
+	return top_n(*args, **kwargs, n=3)
 
 def t_score(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, weights=(1, 1, 1, 1)):
 	"""
