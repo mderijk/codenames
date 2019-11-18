@@ -105,6 +105,11 @@ class Game:
 		# generate hint and log it
 		previous_hints = [(word, number) for word, number in self.hints[self.initiative] if word] # filter out potential None types generated when the hint servers were offline.
 		self.hint = current_team.spymaster.generateHint(self.id, positive_words, negative_words, neutral_words, assassin_words, previous_hints=previous_hints)
+		if self.hint is None:
+			self.hint = (None, None)
+			self.history.append(('ERROR', 'Received NoneType hint. Hint servers might be offline.')))
+			return
+		
 		self.hints[self.initiative].append(self.hint)
 		self.history.append((self.turn, 'New hint for team {}: \'{}\'. Relates to {} cards.'.format(self.initiative, *self.hint)))
 	

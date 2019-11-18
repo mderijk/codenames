@@ -3,11 +3,12 @@ import contextlib
 import sys
 import os
 
-import codenames.config as config
-from codenames.servers.connector import Connector
-from codenames.servers.hintserver import HintServer
-
 def server(name):
+	# imports are placed here so that any errors will be written to a log file
+	import codenames.config as config
+	from codenames.servers.connector import Connector
+	from codenames.servers.hintserver import HintServer
+	
 	server = config.SERVERS[name]
 	socket = server['socket']
 	server_config = server['config']
