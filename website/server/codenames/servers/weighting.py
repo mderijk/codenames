@@ -70,7 +70,7 @@ def top_n(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, n
 	own_team_scores.sort(reverse=True)
 	
 	# invalidate hints for which the nth highest scoring word is lower than the threshold
-	if own_team_scores[n] < threshold:
+	if own_team_scores[n - 1] < threshold:
 		return 0
 	
 	# find highest negative scoring word
