@@ -111,6 +111,7 @@ class WeightedWord2vecHintGenerator(Word2vecHintGenerator):
 		
 		return hint, number
 
+# NOTE: the list of <weighting_methods> should be ordered by top_n in descending order
 class ThresholdWeightedWord2vecHintGenerator(WeightedWord2vecHintGenerator):
 	def __init__(self, *args, weighting_methods=None, **kwargs):
 		super().__init__(*args, **kwargs)
@@ -126,8 +127,10 @@ class ThresholdWeightedWord2vecHintGenerator(WeightedWord2vecHintGenerator):
 			if top_n > len(positive_words):
 				continue
 			
-			if threshold is None:
-				threshold = 0
+			# if we know the player will be dead after one wrong guess, try to come up with a hint for as many cards as the player still needs to guess
+			if len(negative_words) == 1:
+				threshold = None
+			
 			self.threshold = threshold
 			
 			# calculate the hint

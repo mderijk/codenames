@@ -75,8 +75,10 @@ class ThresholdDependencyBasedCollocationsHintGenerator(DependencyBasedCollocati
 			if top_n > len(positive_words):
 				continue
 			
-			if threshold is None:
-				threshold = 0
+			# if we know the player will be dead after one wrong guess, try to come up with a hint for as many cards as the player still needs to guess
+			if len(negative_words) == 1:
+				threshold = None
+			
 			self.threshold = threshold
 			
 			# calculate the hint

@@ -70,16 +70,16 @@ def top_n(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, n
 	own_team_scores.sort(reverse=True)
 	
 	# invalidate hints for which the nth highest scoring word is lower than the threshold
-	if own_team_scores[n - 1] < threshold:
+	if threshold is not None and own_team_scores[n - 1] < threshold:
 		return 0
 	
 	# find highest negative scoring word
-	threshold = max(enemy_team_scores + neutral_scores + assassin_scores)
+	negative_threshold = max(enemy_team_scores + neutral_scores + assassin_scores)
 	
 	# sum the top-n highest scoring own words that are equal to or above the threshold
 	combined_max_score = 0
 	for score in own_team_scores[:n]:
-		if score >= threshold:
+		if score >= negative_threshold:
 			combined_max_score += score
 	
 	return combined_max_score
