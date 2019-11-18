@@ -94,7 +94,7 @@ class WeightedWord2vecHintGenerator(Word2vecHintGenerator):
 		
 		best = gensim.matutils.argsort(combined_dists, topn=n + len(all_words), reverse=True)
 		potential_hints = {self.model.index2word[sim]: float(combined_dists[sim]) for sim in best if not sim in all_words}
-		self.potential_hint_combinations = {self.model.index2word[sim]: [(word, float(dists[sim])) for words_group, word_dists_group in zip(words_grouped, word_dists) for word, dists in zip(words_group, word_dists_group)] for sim in best if not sim in all_words}
+		self.potential_hint_combinations = {self.model.index2word[sim]: [[(word, float(dists[sim])) for word, dists in zip(words_group, word_dists_group)] for words_group, word_dists_group in zip(words_grouped, word_dists)] for sim in best if not sim in all_words}
 		
 		potential_hints = list(sorted(potential_hints.items(), key=lambda x: x[1], reverse=True))
 		return potential_hints
@@ -102,11 +102,56 @@ class WeightedWord2vecHintGenerator(Word2vecHintGenerator):
 	def generateHint(self, game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=20):
 		hint, number = super().generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=n)
 		if self.include_number:
-			number = self.calculate_number(*pmi_scores)
+			number = self.calculate_number(*self.potential_hint_combinations[hint])
 		
 		with self.logger.openLog(game_id) as self.log:
-			self.log.warning(hint, len(self.potential_hint_combinations[hint]), self.potential_hint_combinations[hint])
+			self.log.warning(hint, self.potential_hint_combinations[hint])
 		
 		self.potential_hint_combinations = None
 		
 		return hint, number
+
+class ThresholdWeightedWord2vecHintGenerator(WeightedWord2vecHintGenerator):
+	def __init__(self, *args, weighting_methods=None, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.weighting_methods = weighting_methods
+	
+	def generateHint(self, game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=20):
+		for weighting_method, top_n, threshold in self.weighting_methods:
+			# setup the right parameters for the model
+			self.weighting_method = weighting_method
+			self.max_hint_number = top_n
+			
+			if threshold is None:
+				threshold = 0
+			self.threshold = threshold
+			
+			# calculate the hint
+			hint, number = super(Word2vecHintGenerator, self).generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=n)
+			positive_scores = [rating for word, rating in self.potential_hint_combinations[hint][0]]
+			negative_scores = [rating for word, rating in self.potential_hint_combinations[hint][1]]
+			neutral_scores = [rating for word, rating in self.potential_hint_combinations[hint][2]]
+			assassin_scores = [rating for word, rating in self.potential_hint_combinations[hint][3]]
+			weighted_score = self.weighting_method(positive_scores, negative_scores, neutral_scores, assassin_scores, threshold=self.threshold, weights=self.weights)
+			
+			# check if any of the hints crossed the threshold (in this case the weighted_score of the selected hint will be higher than zero)
+			if weighted_score == 0 and threshold is not None:
+				with self.logger.openLog(game_id) as self.log:
+					self.log.log('WHY', weighted_score, top_n, threshold)
+				continue
+			
+			# calculate number
+			if self.include_number:
+				number = self.calculate_number(*self.potential_hint_combinations[hint])
+			
+			# log pmi scores
+			with self.logger.openLog(game_id) as self.log:
+				self.log.log('Cosine similarities for', hint, *self.potential_hint_combinations[hint])
+			
+			# reset potential_hint_combinations
+			self.potential_hint_combinations = None
+			
+			return hint, number
+		
+		with self.logger.openLog(game_id) as self.log:
+			self.log.log('FFFF', *self.potential_hint_combinations[hint])
