@@ -107,7 +107,7 @@ class Game:
 		self.hint = current_team.spymaster.generateHint(self.id, positive_words, negative_words, neutral_words, assassin_words, previous_hints=previous_hints)
 		if self.hint is None:
 			self.hint = (None, None)
-			self.history.append(('ERROR', 'Received NoneType hint. Hint servers might be offline.')))
+			self.history.append(('ERROR', 'Received NoneType hint. Hint servers might be offline.'))
 			return
 		
 		self.hints[self.initiative].append(self.hint)
