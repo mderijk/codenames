@@ -3,6 +3,7 @@
 function Client() {
 	this.request_lock = false;
 	this.session = JSON.parse(localStorage.getItem('session')); // id, username, in_game
+	this.version = '1.4';
 	
 	this.sendAjaxRequest = function(url, data, callback) {
 		if (this.request_lock === false) {
@@ -47,7 +48,7 @@ function Client() {
 	
 	this.createSession = function(id, username, language) {
 		this.session = {}
-		this.session.version = '1.3';
+		this.session.version = this.version;
 		this.session.id = id;
 		this.session.username = username;
 		this.session.language = language;

@@ -84,10 +84,10 @@ SERVERS = {
 
 # active AI
 AI_NAMES = {
-#	'dependency_based_collocations_top_combined_cz_v1.0': 'AI 0',
+	'dependency_based_collocations_top_combined_cz_v1.0': 'AI 0',
 	'word2vec_weighted_top_combined_cz_v1.0': 'AI 1',
 	
-#	'dependency_based_collocations_top_combined_en_v1.0': 'AI 0',
+	'dependency_based_collocations_top_combined_en_v1.0': 'AI 0',
 	'word2vec_weighted_top_combined_en_v1.0': 'AI 1',
 }
 
