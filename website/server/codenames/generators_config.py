@@ -13,7 +13,33 @@ collocations_model_en = 'data/collocations/sentence_level_collocations_filtered_
 dependency_based_collocations_model_en = 'data/collocations/dependency_level_collocations_filtered_en_v1.0.col'
 
 GENERATORS = {
-	# 4.6th test run
+	# cancelled test run (linear threshold competition (if the numbers are equal of course))
+	# 'dep_col_and_word_embeddings_combined_threshold_cz_v1.0': {
+		# 'class': servers.super.ThresholdSuperHintGenerator,
+		# 'model': (
+			# 'dependency_based_collocations_top_combined_cz_v1.0',
+			# 'word2vec_weighted_top_combined_cz_v1.0',
+		# ),
+		# 'ranges': (
+			# (0, 55),
+			# (0.0, 3.0),
+		# ),
+		# 'max_hint_number': 3,
+	# },
+	# 'dep_col_and_word_embeddings_combined_threshold_en_v1.0': {
+		# 'class': servers.super.ThresholdSuperHintGenerator,
+		# 'model': (
+			# 'dependency_based_collocations_top_combined_en_v1.0',
+			# 'word2vec_weighted_top_combined_en_v1.0',
+		# ),
+		# 'ranges': (
+			# (0, 55),
+			# (0.0, 3.0),
+		# ),
+		# 'max_hint_number': 3,
+	# },
+	
+	# fifth test run
 	# NOTE: the generators used by any SuperHintGenerator must be run on the same server.
 	#		Additionally, it is your responsibility to enable the generators that it depends on in the normal config.
 	'dep_col_and_word_embeddings_combined_cz_v1.0': {
@@ -36,26 +62,26 @@ GENERATORS = {
 	},
 	
 	# 4.5th test run
-	'word2vec_weighted_top_combined_cz_v1.1': {
-		'class': servers.word2vec.ThresholdWeightedWord2vecHintGenerator,
-		'model': word2vec_embeddings_model_cz_v2,
-		'weighting_methods': (
-			(servers.weighting.top_3, 3, 0.28209114),
-			(servers.weighting.top_2, 2, 0.38748214),
-			(servers.weighting.top_1, 1, None), # default to this method if none of the thresholds are met
-		),
-		'weights': (1, 1.2, 1, 2),
-	},
-	'word2vec_weighted_top_combined_en_v1.1': {
-		'class': servers.word2vec.ThresholdWeightedWord2vecHintGenerator,
-		'model': word2vec_embeddings_model_en_v2,
-		'weighting_methods': (
-			(servers.weighting.top_3, 3, 0.34984735),
-			(servers.weighting.top_2, 2, 0.37125748),
-			(servers.weighting.top_1, 1, None), # default to this method if none of the thresholds are met
-		),
-		'weights': (1, 1.2, 1, 2),
-	},
+	# 'word2vec_weighted_top_combined_cz_v1.1': {
+		# 'class': servers.word2vec.ThresholdWeightedWord2vecHintGenerator,
+		# 'model': word2vec_embeddings_model_cz_v2,
+		# 'weighting_methods': (
+			# (servers.weighting.top_3, 3, 0.28209114),
+			# (servers.weighting.top_2, 2, 0.38748214),
+			# (servers.weighting.top_1, 1, None), # default to this method if none of the thresholds are met
+		# ),
+		# 'weights': (1, 1.2, 1, 2),
+	# },
+	# 'word2vec_weighted_top_combined_en_v1.1': {
+		# 'class': servers.word2vec.ThresholdWeightedWord2vecHintGenerator,
+		# 'model': word2vec_embeddings_model_en_v2,
+		# 'weighting_methods': (
+			# (servers.weighting.top_3, 3, 0.34984735),
+			# (servers.weighting.top_2, 2, 0.37125748),
+			# (servers.weighting.top_1, 1, None), # default to this method if none of the thresholds are met
+		# ),
+		# 'weights': (1, 1.2, 1, 2),
+	# },
 	
 	# fourth test run
 	'dependency_based_collocations_top_combined_cz_v1.0': {

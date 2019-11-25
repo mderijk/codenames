@@ -46,4 +46,42 @@ class SuperHintGenerator(HintGenerator):
 					self.log.log('Found candidate hint \'{}\' in {} tries with scores {}'.format(candidate, tries + 1, [weighted_score for index, weighted_score in sorted(weighted_scores[candidate].items())]))
 					yield candidate, max_numbers[candidate] # the number of words the hint relates to becomes the "weighted score"
 		
-		self.log.log('FAILURE: NO BEST HINT FOUND after', self.top_n, 'tries')
+		self.log.warning('FAILURE: NO BEST HINT FOUND after', self.top_n, 'tries')
+
+class ThresholdSuperHintGenerator(SuperHintGenerator):
+	def __init__(self, model, ranges, *args, **kwargs):
+		super().__init__(model, *args, top_n=None, **kwargs)
+		self.ranges = ranges
+	
+	def generateHints(self, positive_words, negative_words, neutral_words, assassin_words, previous_hints):
+		options = []
+		
+		for index, generator in enumerate(self.model.values()):
+			range_start, range_end = self.ranges[index]
+			# ask for hints
+			hints = generator.generateHints(positive_words, negative_words, neutral_words, assassin_words, previous_hints=previous_hints, verbose=False)
+			hint, weighted_score = next(hints)
+			number = generator.calculate_number(*generator.scores[hint])
+			normalized_weighted_score = weighted_score / (range_end - range_start) # score between 0 and 1
+			options.append((number, normalized_weighted_score, hint, generator, hints, range_start, range_end))
+		
+		try:
+			while True:
+				options.sort(reverse=True)
+				
+				number, normalized_weighted_score, hint, generator, hints, range_start, range_end = options[0]
+				self.scores = generator.scores
+				self.log.log('Used model', generator.__class__, 'for hint', hint)
+				yield hint, normalized_weighted_score
+				
+				# if the hint was rejected or we need to generate another hint, let's get another hint from the generator from which was the hint that was rejected
+				options = options[1:]
+				
+				hint, weighted_score = next(hints)
+				number = generator.calculate_number(*generator.scores[hint])
+				normalized_weighted_score = weighted_score / (range_end - range_start) # score between 0 and 1
+				options.append((number, normalized_weighted_score, hint, generator, hints, range_start, range_end))
+		except StopIteration:
+			print('Ran out of valid hints with model', self.model, file=sys.stderr)
+		
+		self.log.warning('FAILURE: NO VALID HINT FOUND')

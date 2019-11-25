@@ -91,6 +91,7 @@ SERVERS = {
 				'word2vec_weighted_top_combined_cz_v1.0',
 				'dependency_based_collocations_top_combined_cz_v1.0',
 				'dep_col_and_word_embeddings_combined_cz_v1.0',
+#				'dep_col_and_word_embeddings_combined_threshold_cz_v1.0',
 			],
 			'log_directory': hints_log_directory,
 		},
@@ -102,6 +103,7 @@ SERVERS = {
 				'word2vec_weighted_top_combined_en_v1.0',
 				'dependency_based_collocations_top_combined_en_v1.0',
 				'dep_col_and_word_embeddings_combined_en_v1.0',
+#				'dep_col_and_word_embeddings_combined_threshold_en_v1.0',
 			],
 			'log_directory': hints_log_directory,
 		},
@@ -113,10 +115,12 @@ AI_NAMES = {
 #	'dependency_based_collocations_top_combined_cz_v1.0': 'AI 0',
 #	'word2vec_weighted_top_combined_cz_v1.1': 'AI 1',
 	'dep_col_and_word_embeddings_combined_cz_v1.0': 'AI 2',
+#	'dep_col_and_word_embeddings_combined_threshold_cz_v1.0': 'AI 3',
 	
 #	'dependency_based_collocations_top_combined_en_v1.0': 'AI 0',
 #	'word2vec_weighted_top_combined_en_v1.1': 'AI 1',
 	'dep_col_and_word_embeddings_combined_en_v1.0': 'AI 2',
+#	'dep_col_and_word_embeddings_combined_threshold_en_v1.0': 'AI 3',
 }
 
 GENERATOR_NAMES = [generator_name for _, server_data in SERVERS.items() for generator_name in server_data['config']['generators'] if generator_name in AI_NAMES]
