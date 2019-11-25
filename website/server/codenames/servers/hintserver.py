@@ -4,6 +4,7 @@ import sys
 
 from . import lg
 from .. import generators_config
+from .super import SuperHintGenerator
 
 class HintServer:
 	def __init__(self, generators, log_directory):
@@ -38,3 +39,12 @@ class HintServer:
 			return response
 		else:
 			print('{} got a request without action or action was not \'hint\'. ({})'.format(request['generator'], repr(request)), file=sys.stderr)
+
+class SuperHintServer(HintServer):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		
+		# do a bit of monkey patching and replace the generator names in SuperHintGenerator.generators with a dict of references to the actual generator objects
+		for generator in self.generators.values():
+			if isinstance(generator, SuperHintGenerator):
+				generator.model = {gen_name: self.generators[gen_name] for gen_name in generator.model}
