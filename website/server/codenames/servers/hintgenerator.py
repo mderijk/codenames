@@ -3,40 +3,44 @@ class HintGenerator:
 	model_cache = {}
 	model_loader = lambda x: x
 	
-	def __init__(self, model, logger, max_hint_number=None):
+	def __init__(self, model, logger, include_number=False, max_hint_number=None):
 		self.model = self._load_model(model)
 		self.logger = logger
+		self.include_number = include_number
 		self.max_hint_number = max_hint_number
+		self.scores = None
 	
 	def _load_model(self, model_name):
 		if model_name not in self.model_cache:
 			self.model_cache[model_name] = self.__class__.model_loader(model_name)
 		return self.model_cache[model_name]
 	
-	def generateHints(self, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=20):
+	def generateHints(self, positive_words, negative_words, neutral_words, assassin_words, previous_hints):
 		""" To be implemented by classes inheriting from HintGenerator. """
 		raise NotImplementedError
 	
-	def generateHint(self, game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=20):
+	def generateHint(self, game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints):
 		with self.logger.openLog(game_id) as self.log:
 			# keep generating hints until you find one that passes all the tests
-			while True:
-				potential_hints = self.generateHints(positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=n)
-				
-				previous_words = [word for word, number in previous_hints]
-				for hint, rating in potential_hints:
-					if all(map(lambda word: self.hint_filter(hint, word), positive_words + negative_words + neutral_words + assassin_words + previous_words)):
-						self.log.log('Generated hint \'{}\' with rating \'{}\''.format(hint, rating))
-						return hint, None
-				
-				n += 20
-				
-				if n > 1000:
-					raise StopIteration('No suitable hint could be found.')
+			potential_hints = self.generateHints(positive_words, negative_words, neutral_words, assassin_words, previous_hints)
+			
+			previous_words = [word for word, number in previous_hints]
+			for hint, rating in potential_hints:
+				if all(map(lambda word: self.hint_filter(hint, word), positive_words + negative_words + neutral_words + assassin_words + previous_words)):
+					self.log.log('Generated hint \'{}\' with rating \'{}\''.format(hint, rating))
+					if self.include_number:
+						scores = self.scores[hint]
+						number = self.calculate_number(*scores)
+					else:
+						number = None
+					
+					return hint, number
+			
+			raise StopIteration('No suitable hint could be found.')
 	
 	def calculate_number(self, positive_words, negative_words, neutral_words, assassin_words):
-		highest_negative_rating = max(rating2 for _, rating2 in negative_words + neutral_words + assassin_words)
-		number_of_better_scoring_positive_words = sum(1 for _, rating in positive_words if rating >= highest_negative_rating) # "better scoring" means equal to or higher than the highest negative word
+		highest_negative_rating = max(rating2 for rating2 in negative_words + neutral_words + assassin_words)
+		number_of_better_scoring_positive_words = sum(1 for rating in positive_words if rating >= highest_negative_rating) # "better scoring" means equal to or higher than the highest negative word
 		if self.max_hint_number is not None:
 			number_of_better_scoring_positive_words = min(self.max_hint_number, number_of_better_scoring_positive_words)
 		return number_of_better_scoring_positive_words

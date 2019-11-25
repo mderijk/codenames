@@ -7,14 +7,13 @@ class CollocationsHintGenerator(HintGenerator):
 	model_loader = collocations.CollocationFinder.load
 	
 	def __init__(self, model, *args, frequency_cutoff=100, include_number=True, threshold=None, weighting_method=weighting.t_score, weights=None, **kwargs):
-		super().__init__(model, *args, **kwargs)
+		super().__init__(model, *args, include_number=include_number, **kwargs)
 		self.frequency_cutoff = frequency_cutoff
-		self.include_number = include_number
 		self.threshold = threshold
 		self.weighting_method = weighting_method
 		self.weights = weights
 	
-	def _generateCollocations(self, own_team_words, enemy_team_words, neutral_words, assassin_words, n=20):
+	def _generateCollocations(self, own_team_words, enemy_team_words, neutral_words, assassin_words):
 		collocation_scores = {} # {word: ([<own_team_score>], [<enemy_team_score>], [<neutral_score>], [<assassin_score>])}
 		unigrams_cutoff = (unigram for unigram, frequency in self.model.unigram_frequencies.items() if frequency >= self.frequency_cutoff)
 		for word2 in unigrams_cutoff:
@@ -36,24 +35,23 @@ class CollocationsHintGenerator(HintGenerator):
 					weighted_score = self.weighting_method(own_team_scores, enemy_team_scores, neutral_scores, assassin_scores, threshold=self.threshold, weights=self.weights)
 			matches.append((weighted_score, word, scores))
 		
-		return list(sorted(matches, reverse=True)[:n])
+		return sorted(matches, reverse=True)
 	
-	def generateHints(self, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=20):
-		collocations = self._generateCollocations(positive_words, negative_words, neutral_words, assassin_words, n=n)
-		weighted_scores, words, individual_scores_list = zip(*collocations)
-		self.individual_scores_dict = dict(zip(words, individual_scores_list))
-		return zip(words, weighted_scores)
+	def generateHints(self, positive_words, negative_words, neutral_words, assassin_words, previous_hints):
+		collocations = self._generateCollocations(positive_words, negative_words, neutral_words, assassin_words)
+		self.scores = {}
+		for weighted_score, word, scores in collocations:
+			self.scores[word] = scores
+			yield word, weighted_score
 	
-	def generateHint(self, game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=20):
-		hint, number = super().generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=n)
-		pmi_scores = [[(word, score) for word, score in zip(word_group, scores)] for word_group, scores in zip([positive_words, negative_words, neutral_words, assassin_words], self.individual_scores_dict[hint])]
-		if self.include_number:
-			number = self.calculate_number(*pmi_scores)
+	def generateHint(self, game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints):
+		hint, number = super().generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints)
+		pmi_scores = [[(word, score) for word, score in zip(word_group, scores)] for word_group, scores in zip([positive_words, negative_words, neutral_words, assassin_words], self.scores[hint])]
 		
 		with self.logger.openLog(game_id) as self.log:
 			self.log.log('PMI scores for', hint, *pmi_scores)
 		
-		self.individual_scores_dict = None
+		self.scores = None
 		
 		return hint, number
 
@@ -65,7 +63,7 @@ class ThresholdDependencyBasedCollocationsHintGenerator(DependencyBasedCollocati
 		super().__init__(*args, **kwargs)
 		self.weighting_methods = weighting_methods
 	
-	def generateHint(self, game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=20):
+	def generateHints(self, positive_words, negative_words, neutral_words, assassin_words, previous_hints, verbose=True):
 		for weighting_method, top_n, threshold in self.weighting_methods:
 			# setup the right parameters for the model
 			self.weighting_method = weighting_method
@@ -82,23 +80,15 @@ class ThresholdDependencyBasedCollocationsHintGenerator(DependencyBasedCollocati
 			self.threshold = threshold
 			
 			# calculate the hint
-			hint, number = super(CollocationsHintGenerator, self).generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints, n=n)
-			pmi_scores = [[(word, score) for word, score in zip(word_group, scores)] for word_group, scores in zip([positive_words, negative_words, neutral_words, assassin_words], self.individual_scores_dict[hint])]
-			weighted_score = self.weighting_method(*self.individual_scores_dict[hint], threshold=self.threshold, weights=self.weights)
-			
-			# check if any of the hints crossed the threshold (in this case the weighted_score of the selected hint will be higher than zero)
-			if weighted_score == 0 and threshold is not None:
-				continue
-			
-			# calculate number
-			if self.include_number:
-				number = self.calculate_number(*pmi_scores)
-			
-			# log pmi scores
-			with self.logger.openLog(game_id) as self.log:
-				self.log.log('PMI scores for', hint, *pmi_scores)
-			
-			# reset individual_scores_dict
-			self.individual_scores_dict = None
-			
-			return hint, number
+			hints = super().generateHints(positive_words, negative_words, neutral_words, assassin_words, previous_hints)
+			for hint, weighted_score in hints:
+				# check if the hint crossed the threshold (in this case the weighted_score of the selected hint will be higher than zero)
+				if weighted_score == 0 and threshold is not None:
+					break # if the hint did not cross the threshold, we move to the weighting_method
+				
+				# log pmi scores
+				pmi_scores = [[(word, score) for word, score in zip(word_group, scores)] for word_group, scores in zip([positive_words, negative_words, neutral_words, assassin_words], self.scores[hint])]
+				if verbose:
+					self.log.log('PMI scores for', hint, *pmi_scores)
+				
+				yield hint, weighted_score
