@@ -31,7 +31,7 @@ class Word2vecHintGenerator(HintGenerator):
 			cosine_similarities = [[(word, self.model.similarity(hint, word)) for word in words] for words in [positive_words, negative_words, neutral_words, assassin_words]]
 			self.log.log('Cosine similarities for', hint, *cosine_similarities)
 		
-		return hint, None
+		return hint, number
 
 class AveragedWord2vecHintGenerator(Word2vecHintGenerator):
 	def generateHints(self, positive_words, negative_words, neutral_words, assassin_words, previous_hints):
@@ -53,14 +53,14 @@ class AveragedWord2vecHintGenerator(Word2vecHintGenerator):
 			yield hint, score
 	
 	def generateHint(self, game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints):
-		hint = super().generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints)
+		hint, number = super().generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints)
 		
 		with self.logger.openLog(game_id) as self.log:
 			self.log.warning((hint, len(set(item for combination in self.potential_hint_combinations[hint] for item in combination)), self.potential_hint_combinations[hint]))
 		
 		self.potential_hint_combinations = None
 		
-		return hint, None
+		return hint, number
 
 class WeightedWord2vecHintGenerator(Word2vecHintGenerator):
 	def __init__(self, *args, include_number=True, threshold=None, weighting_method=weighting.combined_max_score, weights=None, **kwargs):
