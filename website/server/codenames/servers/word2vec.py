@@ -25,7 +25,7 @@ class Word2vecHintGenerator(HintGenerator):
 			yield word, score
 	
 	def generateHint(self, game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints):
-		hint = super().generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints)
+		hint, number = super().generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints)
 		
 		with self.logger.openLog(game_id) as self.log:
 			cosine_similarities = [[(word, self.model.similarity(hint, word)) for word in words] for words in [positive_words, negative_words, neutral_words, assassin_words]]
