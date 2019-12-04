@@ -44,6 +44,24 @@ class User:
 		return id
 
 
+def get_weighted_options(generator_names, k=10):
+	weighted_options = []
+	for generator_name in generator_names:
+		hints_log_directory = 'data/hints'
+		generator_log_directory = os.path.join(hints_log_directory, generator_name)
+		number_of_games_played = 0
+		for _ in os.listdir(generator_log_directory):
+			number_of_games_played += 1
+		
+		if number_of_games_played < k:
+			for _ in range(k - number_of_games_played):
+				weighted_options.append(generator_name)
+	
+	if not weighted_options: # if we have enough games for every AI, just choose any random AI
+		return generator_names
+	
+	return weighted_options
+
 def createNewGame(session):
 	words = []
 	word_list_filename = 'data/lexicons/original_trimmed_{}.txt'.format(session.language)
@@ -55,7 +73,9 @@ def createNewGame(session):
 	
 	users = [session.user_id, None]
 	generator_names_by_language = config.GENERATOR_NAMES_BY_LANGUAGE[session.language]
-	ai_name = random.choice(generator_names_by_language)
+	weighted_options = get_weighted_options(generator_names_by_language, k=10) # TEMP
+	ai_name = random.choice(weighted_options) # TEMP
+#	ai_name = random.choice(generator_names_by_language)
 	game = codenames.SinglePlayerGame(users, words, ai_name=ai_name)
 	return game
 
