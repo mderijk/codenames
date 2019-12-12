@@ -116,7 +116,7 @@ AI_NAMES = {
 #	'word2vec_weighted_top_2_cz_v1.0': 'AI 1',
 #	'word2vec_weighted_top_3_cz_v1.0': 'AI 2',
 	
-	'word2vec_weighted_top_1_en_v1.0': 'AI 0',
+#	'word2vec_weighted_top_1_en_v1.0': 'AI 0',
 	'word2vec_weighted_top_2_en_v1.0': 'AI 1',
 	'word2vec_weighted_top_3_en_v1.0': 'AI 2',
 }
