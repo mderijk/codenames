@@ -73,9 +73,9 @@ def createNewGame(session):
 	
 	users = [session.user_id, None]
 	generator_names_by_language = config.GENERATOR_NAMES_BY_LANGUAGE[session.language]
-#	weighted_options = get_weighted_options(generator_names_by_language, k=10) # Make sure an equal amount of games gets played for all models up to a certain threshold k
-#	ai_name = random.choice(weighted_options) # Make sure an equal amount of games gets played for all models up to a certain threshold k
-	ai_name = random.choice(generator_names_by_language)
+	weighted_options = get_weighted_options(generator_names_by_language, k=10) # Make sure an equal amount of games gets played for all models up to a certain threshold k
+	ai_name = random.choice(weighted_options) # Make sure an equal amount of games gets played for all models up to a certain threshold k
+#	ai_name = random.choice(generator_names_by_language)
 	game = codenames.SinglePlayerGame(users, words, ai_name=ai_name)
 	return game
 

@@ -13,6 +13,42 @@ collocations_model_en = 'data/collocations/sentence_level_collocations_filtered_
 dependency_based_collocations_model_en = 'data/collocations/dependency_level_collocations_filtered_en_v1.0.col'
 
 GENERATORS = {
+	# sixth test run
+	'word2vec_weighted_top_1_cz_v1.1': {
+		'class': servers.word2vec.WeightedWord2vecHintGenerator,
+		'model': word2vec_embeddings_model_cz,
+		'include_number': True,
+		'max_hint_number': 1,
+		'weighting_method': servers.weighting.top_1,
+		'weights': (1, 1.2, 1, 2),
+	},
+	'word2vec_weighted_top_2_cz_v1.1': {
+		'class': servers.word2vec.WeightedWord2vecHintGenerator,
+		'model': word2vec_embeddings_model_cz,
+		'include_number': True,
+		'max_hint_number': 2,
+		'weighting_method': servers.weighting.top_2,
+		'weights': (1, 1.2, 1, 2),
+	},
+	'word2vec_weighted_top_3_cz_v1.1': {
+		'class': servers.word2vec.WeightedWord2vecHintGenerator,
+		'model': word2vec_embeddings_model_cz,
+		'include_number': True,
+		'max_hint_number': 3,
+		'weighting_method': servers.weighting.top_3,
+		'weights': (1, 1.2, 1, 2),
+	},
+	'word2vec_weighted_top_combined_cz_v1.1': {
+		'class': servers.word2vec.ThresholdWeightedWord2vecHintGenerator,
+		'model': word2vec_embeddings_model_cz,
+		'weighting_methods': (
+			(servers.weighting.top_3, 3, 0.28209114),
+			(servers.weighting.top_2, 2, 0.38748214),
+			(servers.weighting.top_1, 1, None), # default to this method if none of the thresholds are met
+		),
+		'weights': (1, 1.2, 1, 2),
+	},
+	
 	# cancelled test run (linear threshold competition (if the numbers are equal of course))
 	# 'dep_col_and_word_embeddings_combined_threshold_cz_v1.0': {
 		# 'class': servers.super.ThresholdSuperHintGenerator,
