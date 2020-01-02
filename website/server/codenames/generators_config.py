@@ -167,7 +167,7 @@ GENERATORS = {
 	'word2vec_weighted_top_1_cz_v1.0': {
 		'class': servers.word2vec.WeightedWord2vecHintGenerator,
 		'model': word2vec_embeddings_model_cz,
-		'include_number': True,
+		'include_number': False,
 		'max_hint_number': 1,
 		'weighting_method': servers.weighting.top_1,
 		'weights': (1, 1.2, 1, 2),
@@ -175,7 +175,7 @@ GENERATORS = {
 	'word2vec_weighted_top_2_cz_v1.0': {
 		'class': servers.word2vec.WeightedWord2vecHintGenerator,
 		'model': word2vec_embeddings_model_cz,
-		'include_number': True,
+		'include_number': False,
 		'max_hint_number': 2,
 		'weighting_method': servers.weighting.top_2,
 		'weights': (1, 1.2, 1, 2),
@@ -183,7 +183,7 @@ GENERATORS = {
 	'word2vec_weighted_top_3_cz_v1.0': {
 		'class': servers.word2vec.WeightedWord2vecHintGenerator,
 		'model': word2vec_embeddings_model_cz,
-		'include_number': True,
+		'include_number': False,
 		'max_hint_number': 3,
 		'weighting_method': servers.weighting.top_3,
 		'weights': (1, 1.2, 1, 2),
