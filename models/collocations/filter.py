@@ -15,7 +15,7 @@ def load_lexicon(filename):
 	
 	return lexicon
 
-def filter_collocator(language, collocator_filename_format='collocations_filtered_{}.col', frequency_cutoff=0, sentence_level=False, dependency_level=False):
+def filter_collocator(language, collocator_filename_format='collocations_filtered_{}.col', frequency_cutoff=0, sentence_level=False, dependency_level=False, syntactic=False):
 	""" Load a collection of collocations and keep only those collocations (word1, word2) where:
 	- the word1 is in the lexicon of that language
 	- both word1 and word2 contain only alphabetic characters
@@ -28,7 +28,7 @@ def filter_collocator(language, collocator_filename_format='collocations_filtere
 	lexicon = load_lexicon(lexicon_filename)
 	
 	# load collocator
-	collocator = collocations.get_collocation_finder(language, sentence_level=sentence_level, dependency_level=dependency_level)
+	collocator = collocations.get_collocation_finder(language, sentence_level=sentence_level, dependency_level=dependency_level, syntactic=syntactic)
 	
 	# remove hints that contain non-alphabetic characters
 	for unigram in list(collocator.unigram_frequencies.keys()):
@@ -59,6 +59,7 @@ def main(argv):
 	if len(argv) == 2:
 		filter_collocator(argv[1], collocator_filename_format='sentence_level_collocations_filtered_{}.col', frequency_cutoff=100, sentence_level=True)
 		filter_collocator(argv[1], collocator_filename_format='dependency_level_collocations_filtered_{}.col', dependency_level=True)
+		filter_collocator(argv[1], collocator_filename_format='syntactic_collocations_filtered_{}.col', syntactic=True)
 	else:
 		print('USAGE: {} <language>'.format(argv[0]), file=sys.stderr)
 

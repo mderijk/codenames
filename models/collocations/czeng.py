@@ -26,7 +26,7 @@ def filter_files(directory, verbose=False):
 					print('Reading sentences from file \'{}\''.format(file_path))
 				yield from filter_file(file_path)
 
-def extract_sentence_from_line(line, language, keep_dependencies=False):
+def extract_sentence_from_line(line, language, keep_dependencies=False, keep_parts_of_speech=False):
 	offset = 0
 	if language == 'en':
 		offset = 4
@@ -71,6 +71,17 @@ def extract_sentence_from_line(line, language, keep_dependencies=False):
 				sentence.append(lemma)
 		
 		return sentence, dependencies
+	elif keep_parts_of_speech:
+		parts_of_speech = []
+		a_layer = columns[2 + offset]
+		for token_information in a_layer.split(' '):
+			word_form, lemma, tag, index_in_sentence, index_of_governor, syntactic_function = token_information.split('|')
+			parts_of_speech.append(tag)
+			
+			lemma = filter_lemma(lemma)
+			sentence.append(lemma)
+		
+		return sentence, parts_of_speech
 	else:
 		a_layer = columns[2 + offset]
 		for token_information in a_layer.split(' '):
