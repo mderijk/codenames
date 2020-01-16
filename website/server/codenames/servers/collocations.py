@@ -58,6 +58,9 @@ class CollocationsHintGenerator(HintGenerator):
 class DependencyBasedCollocationsHintGenerator(CollocationsHintGenerator):
 	model_loader = collocations.DependencyBasedCollocationFinder.load
 
+class SyntacticCollocationsHintGenerator(CollocationsHintGenerator):
+	model_loader = collocations.SyntacticCollocationFinder.load
+
 class ThresholdDependencyBasedCollocationsHintGenerator(DependencyBasedCollocationsHintGenerator):
 	def __init__(self, *args, weighting_methods=None, **kwargs):
 		super().__init__(*args, **kwargs)

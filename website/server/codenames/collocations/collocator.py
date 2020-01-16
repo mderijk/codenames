@@ -90,6 +90,34 @@ class CollocationFinder:
 		return collocator
 
 
+class SyntacticCollocationFinder(CollocationFinder):
+	def __init__(self, *args, allowed_pos_tags=('N', 'V', 'J'), **kwargs):
+		self.allowed_pos_tags = allowed_pos_tags
+		super().__init__(*args, **kwargs)
+	
+	def count_frequencies(self, sentences, lexicon):
+		for sentence, parts_of_speech in sentences:
+			# filter out words with the wrong parts of speech
+			sentence_parts_of_speech = zip(sentence, parts_of_speech)
+			sentence_parts_of_speech = [(word, pos) for word, pos in sentence_parts_of_speech if any(map(pos.startswith, self.allowed_pos_tags))]
+			
+			if not sentence_parts_of_speech: # make sure there are still words left after filtering
+				continue
+			
+			sentence, parts_of_speech = zip(*sentence_parts_of_speech)
+			
+			self.unigram_frequencies.update(sentence)
+			
+			# add bigrams
+			for word1, word2 in zip(sentence, sentence[1:]):
+				if word1 in lexicon and word1 != word2: # avoid duplicates because we are not allowed to use the word itself as a hint anyway
+					bigram = (word1, word2)
+					self.bigram_frequencies[bigram] += 1
+				elif word2 in lexicon and word1 != word2: # avoid duplicates because we are not allowed to use the word itself as a hint anyway
+					bigram = (word2, word1)
+					self.bigram_frequencies[bigram] += 1
+
+
 class SentenceLevelCollocationFinder(CollocationFinder):
 	def count_frequencies(self, sentences, lexicon):
 		multi_word_expressions_in_lexicon = any(' ' in word for word in lexicon)

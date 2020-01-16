@@ -6,13 +6,31 @@ word2vec_embeddings_model_cz = 'data/wiki.cs/wiki-czeng-filtered-top-10000.cs.ve
 word2vec_embeddings_model_cz_v2 = 'data/wiki.cs/wiki-czeng-filtered-similar-top-1000-frequency-top-10000.cs.vec'
 collocations_model_cz = 'data/collocations/sentence_level_collocations_filtered_cz_v1.0.col'
 dependency_based_collocations_model_cz = 'data/collocations/dependency_level_collocations_filtered_cz_v1.0.col'
+syntactic_collocations_model_cz = 'data/collocations/syntactic_collocations_filtered_cz_v1.0.col'
 
 word2vec_embeddings_model_en = 'data/wiki.en/wiki-czeng-filtered-top-10000.en.vec'
 word2vec_embeddings_model_en_v2 = 'data/wiki.en/wiki-czeng-filtered-similar-top-1000-frequency-top-10000.en.vec'
 collocations_model_en = 'data/collocations/sentence_level_collocations_filtered_en_v1.0.col'
 dependency_based_collocations_model_en = 'data/collocations/dependency_level_collocations_filtered_en_v1.0.col'
+syntactic_collocations_model_en = 'data/collocations/syntactic_collocations_filtered_en_v1.0.col'
 
 GENERATORS = {
+	# Models based on syntactic collocations seem to perform decently. They can sometimes give you a hint for 4 or 5 words and leave you amazed. Other times they don't even give you a good hint for one. It's a bit of both, and when inspecting the PMI values, the dependency ones seem to be more accurate, so we think those models have more of a future.
+	'syntactic_collocations_combined_top_3_cz_v1.0': {
+		'class': servers.collocations.SyntacticCollocationsHintGenerator,
+		'model': syntactic_collocations_model_cz,
+		'frequency_cutoff': 1000,
+		'weighting_method': servers.weighting.top_3,
+		'weights': (1, 1.2, 1, 2),
+	},
+	'syntactic_collocations_combined_top_3_en_v1.0': {
+		'class': servers.collocations.SyntacticCollocationsHintGenerator,
+		'model': syntactic_collocations_model_en,
+		'frequency_cutoff': 1000,
+		'weighting_method': servers.weighting.top_3,
+		'weights': (1, 1.2, 1, 2),
+	},
+	
 	# sixth test run
 	'word2vec_weighted_top_1_cz_v1.1': {
 		'class': servers.word2vec.WeightedWord2vecHintGenerator,
