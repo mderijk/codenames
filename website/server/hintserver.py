@@ -6,8 +6,8 @@ import os
 def server(name):
 	# imports are placed here so that any errors will be written to a log file
 	import codenames.config as config
-	from codenames.servers.connector import Connector
-	from codenames.servers.hintserver import SuperHintServer
+	from codenames.generators.connector import Connector
+	from codenames.generators.hintserver import SuperHintServer
 	
 	server = config.SERVERS[name]
 	socket = server['socket']
