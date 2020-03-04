@@ -8,7 +8,7 @@ from multiprocessing.connection import Client
 
 from codenames.config import SERVERS
 
-def stop_server(server_name, socket):
+def stopServer(server_name, socket):
 	# establish communications
 	connection = None
 	try:
@@ -37,7 +37,7 @@ def main(socket=('localhost', 3063)):
 	sys.stderr = open(logfile, 'a')
 	
 	for server_name, server_config in SERVERS.items():
-		stop_server(server_name, server_config['socket'])
+		stopServer(server_name, server_config['socket'])
 
 if __name__ == '__main__':
 	main()

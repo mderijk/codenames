@@ -44,7 +44,7 @@ class User:
 		return id
 
 
-def get_weighted_options(generator_names, k=10):
+def getWeightedOptions(generator_names, k=10):
 	weighted_options = []
 	for generator_name in generator_names:
 		hints_log_directory = 'data/hints'
@@ -73,7 +73,7 @@ def createNewGame(session):
 	
 	users = [session.user_id, None]
 	generator_names_by_language = config.GENERATOR_NAMES_BY_LANGUAGE[session.language]
-	weighted_options = get_weighted_options(generator_names_by_language, k=10) # Make sure an equal amount of games gets played for all models up to a certain threshold k
+	weighted_options = getWeightedOptions(generator_names_by_language, k=10) # Make sure an equal amount of games gets played for all models up to a certain threshold k
 	ai_name = random.choice(weighted_options) # Make sure an equal amount of games gets played for all models up to a certain threshold k
 #	ai_name = random.choice(generator_names_by_language)
 	game = codenames.SinglePlayerGame(users, words, ai_name=ai_name)

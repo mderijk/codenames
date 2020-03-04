@@ -14,7 +14,7 @@ if sys.platform == 'win32': # windows
 else:
 	PYTHON_PATH = 'venv/bin/python'
 
-def launch_server(server_name, socket):
+def launchServer(server_name, socket):
 	# try opening a listener and depending on whether it fails, open a new process
 	try:
 		listener = Listener(socket)
@@ -38,7 +38,7 @@ def main():
 	sys.stderr = open(logfile, 'a')
 	
 	for server_name, server_config in SERVERS.items():
-		launch_server(server_name, server_config['socket'])
+		launchServer(server_name, server_config['socket'])
 
 if __name__ == '__main__':
 	main()
