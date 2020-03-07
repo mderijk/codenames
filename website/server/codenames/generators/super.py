@@ -8,7 +8,6 @@ from collections import defaultdict
 import os
 import re
 
-from ..ai import AI
 from .hintgenerator import HintGenerator
 
 class SuperHintGenerator(HintGenerator):

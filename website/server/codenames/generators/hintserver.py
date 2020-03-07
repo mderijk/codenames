@@ -3,7 +3,7 @@ import os
 import sys
 
 from . import lg
-from .. import generators_config
+from .. import config
 from .super import SuperHintGenerator
 
 class HintServer:
@@ -14,7 +14,7 @@ class HintServer:
 		
 		# create generator instances with appropriate logging mechanisms
 		for name in generators:
-			kwargs = generators_config.GENERATORS[name]
+			kwargs = config.GENERATORS[name]
 			class_ = kwargs['class']
 			del kwargs['class']
 			
