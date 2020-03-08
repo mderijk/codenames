@@ -7,7 +7,7 @@ import pickle
 import random
 import sys
 import uuid
-	
+
 import codenames
 import codenames.config as config
 
@@ -23,7 +23,7 @@ class Session:
 		# create session id and make sure it doesn't exist yet
 		while True:
 			id = str(uuid.uuid4())
-			game_file = 'data/sessions/{}.pickle'.format(id)
+			game_file = os.path.join(config.sessions_directory, '{}.pickle'.format(id))
 			
 			if not os.path.isfile(game_file):
 				break
@@ -36,7 +36,7 @@ class User:
 		# create user id and make sure it doesn't exist yet
 		while True:
 			id = str(uuid.uuid4())
-			user_file = 'data/users/{}'.format(id)
+			user_file = os.path.join(config.users_directory, '{}'.format(id))
 			
 			if not os.path.isfile(user_file):
 				break
@@ -47,8 +47,7 @@ class User:
 def getWeightedOptions(generator_names, k=10):
 	weighted_options = []
 	for generator_name in generator_names:
-		hints_log_directory = 'data/hints'
-		generator_log_directory = os.path.join(hints_log_directory, generator_name)
+		generator_log_directory = os.path.join(config.hints_log_directory, generator_name)
 		number_of_games_played = 0
 		for _ in os.listdir(generator_log_directory):
 			number_of_games_played += 1
@@ -64,7 +63,7 @@ def getWeightedOptions(generator_names, k=10):
 
 def createNewGame(session):
 	words = []
-	word_list_filename = 'data/lexicons/original_trimmed_{}.txt'.format(session.language)
+	word_list_filename = os.path.join(config.lexicons_directory, 'original_trimmed_{}.txt'.format(session.language))
 	with open(word_list_filename, encoding='utf-8') as f:
 		for line in f:
 			word = line.strip()
@@ -86,7 +85,7 @@ def getGame(game_file):
 	return game
 
 def saveGame(game):
-	game_file = 'data/games/{}.pickle'.format(game.id)
+	game_file = os.path.join(config.games_directory, '{}.pickle'.format(game.id))
 	with open(game_file, 'wb') as f:
 		pickle.dump(game, f)
 	
@@ -94,11 +93,11 @@ def saveGame(game):
 
 def archiveGame(game):
 	game_file = saveGame(game)
-	archive_file = 'data/games/archive/{}.pickle'.format(game.id)
+	archive_file = os.path.join(config.games_archive_directory, '{}.pickle'.format(game.id))
 	os.rename(game_file, archive_file)
 	
 	# archive history as well
-	history_file = 'data/games/history/{}.log'.format(game.id)
+	history_file = os.path.join(config.games_history_directory, '{}.log'.format(game.id))
 	with open(history_file, 'w', encoding='utf-8') as f:
 		for event in game.history:
 			try:
@@ -112,7 +111,7 @@ def archiveGame(game):
 			users_team = game.users.index(user_id)
 			score = game.getScoreByTeam(users_team)
 			
-			score_file = os.path.join('data', 'scores', '{}'.format(user_id))
+			score_file = os.path.join(config.scores_directory, '{}'.format(user_id))
 			with open(score_file, 'a', encoding='utf-8') as f:
 				users_team = game.users.index(user_id)
 				generator_name = game.teams[users_team].spymaster.name
@@ -267,7 +266,7 @@ def handleGameRequest(request, session):
 def assembleHallOfFame(top_n=10):
 	# open users/users.txt and create a map from user_id => username
 	# load file of users
-	users_file = os.path.join('data', 'users', 'users.txt')
+	users_file = os.path.join(config.users_directory, 'users.txt')
 	users = {}
 	if os.path.isfile(users_file):
 		with open(users_file, encoding='utf-8') as f:
@@ -279,7 +278,7 @@ def assembleHallOfFame(top_n=10):
 	scores_by_ai = {generator_name: [] for generator_name in config.GENERATOR_NAMES}
 	
 	# open everything in scores/{user_id}
-	scores_dir = os.path.join('data', 'scores')
+	scores_dir = config.scores_directory
 	for root, dirs, files in os.walk(scores_dir):
 		for filename in files:
 			user_id = filename
@@ -367,7 +366,7 @@ def saveSession(session):
 	if session.game is not None:
 		saveGame(session.game)
 	
-	session_file = 'data/sessions/{}.pickle'.format(session.id)
+	session_file = os.path.join(config.sessions_directory, '{}.pickle'.format(session.id))
 	if session.game is not None:
 		game = session.game
 		session.game = session.game.id
@@ -379,7 +378,7 @@ def saveSession(session):
 
 def createSession(username, language):
 	# load file of users
-	users_file = os.path.join('data', 'users', 'users.txt')
+	users_file = os.path.join(config.users_directory, 'users.txt')
 	users = {}
 	if os.path.isfile(users_file):
 		with open(users_file, encoding='utf-8') as f:
@@ -402,7 +401,7 @@ def createSession(username, language):
 	session = Session(user_id, username, language)
 	
 	# save the users new session_id
-	username_file = os.path.join('data', 'users', '{}'.format(session.user_id))
+	username_file = os.path.join(config.users_directory, '{}'.format(session.user_id))
 	with open(username_file, 'a', encoding='utf-8') as f:
 		print(session.id, file=f)
 	
@@ -419,7 +418,7 @@ def loadSession(session_file):
 	return session
 
 def getSession(session_id):
-	session_file = 'data/sessions/{}.pickle'.format(session_id)
+	session_file = os.path.join(config.sessions_directory, '{}.pickle'.format(session_id))
 	
 	# check if the session id is valid
 	if not os.path.isfile(session_file):
@@ -430,7 +429,7 @@ def getSession(session_id):
 	
 	# get related game object and hook it up to the session object
 	if session.game is not None:
-		game_file = 'data/games/{}.pickle'.format(session.game)
+		game_file = os.path.join(config.games_directory, '{}.pickle'.format(session.game))
 		game = getGame(game_file)
 		session.game = game
 	
@@ -439,11 +438,11 @@ def getSession(session_id):
 
 def route(request):
 	# make sure all the relevant data directories exist
-	os.makedirs('data/games/archive', exist_ok=True)
-	os.makedirs('data/games/history', exist_ok=True)
-	os.makedirs('data/scores', exist_ok=True)
-	os.makedirs('data/sessions', exist_ok=True)
-	os.makedirs('data/users', exist_ok=True)
+	os.makedirs(config.games_archive_directory, exist_ok=True)
+	os.makedirs(config.games_history_directory, exist_ok=True)
+	os.makedirs(config.scores_directory, exist_ok=True)
+	os.makedirs(config.sessions_directory, exist_ok=True)
+	os.makedirs(config.users_directory, exist_ok=True)
 	
 	if not 'action' in request or not request['action']:
 		response = {
@@ -490,9 +489,9 @@ def route(request):
 
 def main():
 	# make sure the logs directory exists
-	os.makedirs('logs', exist_ok=True)
+	os.makedirs(config.logs_directory, exist_ok=True)
 	
-	log_file = os.path.join('logs', 'webserver.log')
+	log_file = os.path.join(config.logs_directory, 'webserver.log')
 	with open(log_file, 'a', encoding='utf-8') as stderr, contextlib.redirect_stderr(stderr):
 		try:
 			proper_stdin = io.TextIOWrapper(sys.stdin.buffer, encoding='utf-8') # reopen stdin with the correct encoding (in python 3.7 and above you can use sys.stdin.reconfigure('utf-8') instead)

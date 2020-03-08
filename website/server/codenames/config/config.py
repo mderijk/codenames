@@ -1,7 +1,19 @@
 
+import os
+
 # Config file
 
-hints_log_directory = 'data/hints'
+logs_directory = 'logs'
+data_directory = 'data'
+
+hints_log_directory = os.path.join(data_directory, 'hints')
+games_directory = os.path.join(data_directory, 'games')
+games_archive_directory = os.path.join(games_directory, 'archive')
+games_history_directory = os.path.join(games_directory, 'history')
+lexicons_directory = os.path.join(data_directory, 'lexicons')
+scores_directory = os.path.join(data_directory, 'scores')
+sessions_directory = os.path.join(data_directory, 'sessions')
+users_directory = os.path.join(data_directory, 'users')
 
 LANGUAGES = ['cz', 'en']
 

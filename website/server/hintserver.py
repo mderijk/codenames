@@ -3,9 +3,10 @@ import contextlib
 import sys
 import os
 
+import codenames.config as config
+
 def server(name):
 	# imports are placed here so that any errors will be written to a log file
-	import codenames.config as config
 	from codenames.generators.connector import Connector
 	from codenames.generators.hintserver import SuperHintServer
 	
@@ -29,9 +30,9 @@ def server(name):
 
 def main(argv):
 	# make sure the logs directory exists
-	os.makedirs('logs', exist_ok=True)
+	os.makedirs(config.logs_directory, exist_ok=True)
 	
-	log_file = os.path.join('logs', 'hintserver.log')
+	log_file = os.path.join(config.logs_directory, 'hintserver.log')
 	with open(log_file, 'a') as stderr, contextlib.redirect_stderr(stderr):
 		try:
 			server(argv[1])

@@ -1,17 +1,14 @@
 
 from .. import collocations
-from .hintgenerator import HintGenerator
-from . import weighting
+from .hintgenerator import WeightedHintGenerator, ThresholdWeightedHintGenerator
 
-class CollocationsHintGenerator(HintGenerator):
+class CollocationsHintGenerator(WeightedHintGenerator):
 	model_loader = collocations.CollocationFinder.load
 	
-	def __init__(self, model, *args, frequency_cutoff=100, include_number=True, threshold=None, weighting_method=weighting.t_score, weights=None, **kwargs):
+	def __init__(self, model, *args, frequency_cutoff=100, include_number=True, threshold=None, **kwargs):
 		super().__init__(model, *args, include_number=include_number, **kwargs)
 		self.frequency_cutoff = frequency_cutoff
 		self.threshold = threshold
-		self.weighting_method = weighting_method
-		self.weights = weights
 	
 	def _generateCollocations(self, own_team_words, enemy_team_words, neutral_words, assassin_words):
 		collocation_scores = {} # {word: ([<own_team_score>], [<enemy_team_score>], [<neutral_score>], [<assassin_score>])}
@@ -61,11 +58,7 @@ class DependencyBasedCollocationsHintGenerator(CollocationsHintGenerator):
 class SyntacticCollocationsHintGenerator(CollocationsHintGenerator):
 	model_loader = collocations.SyntacticCollocationFinder.load
 
-class ThresholdDependencyBasedCollocationsHintGenerator(DependencyBasedCollocationsHintGenerator):
-	def __init__(self, *args, weighting_methods=None, **kwargs):
-		super().__init__(*args, **kwargs)
-		self.weighting_methods = weighting_methods
-	
+class ThresholdDependencyBasedCollocationsHintGenerator(DependencyBasedCollocationsHintGenerator, ThresholdWeightedHintGenerator):
 	def generateHints(self, positive_words, negative_words, neutral_words, assassin_words, previous_hints, verbose=True):
 		for weighting_method, top_n, threshold in self.weighting_methods:
 			# setup the right parameters for the model

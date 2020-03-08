@@ -1,13 +1,15 @@
 
-import sys
-import os
 from multiprocessing.connection import Listener
+import os
 import socket
+import sys
+
+from .. import config
 from .protocol import Protocol
 
 # Connector class
 class Connector:
-	def __init__(self, socket=('localhost', 3063), logfile='logs/connector.log', protocol=None):
+	def __init__(self, socket=('localhost', 3063), logfile=os.path.join(config.logs_directory, 'connector.log'), protocol=None):
 		self.socket = socket
 		self.logfile = logfile
 		if protocol is None:
@@ -15,7 +17,7 @@ class Connector:
 		self.protocol = protocol
 		
 		# create log directory
-		logdir = '/'.join(self.logfile.split('/')[:-1])
+		logdir = os.path.dirname(self.logfile)
 		os.makedirs(logdir, exist_ok=True)
 	
 	def __enter__(self):

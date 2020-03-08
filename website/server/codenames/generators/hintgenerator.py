@@ -1,4 +1,17 @@
 
+import importlib
+import os
+
+from .. import config
+
+def load_function_from_string(function_string):
+	module_name, function_name = function_string.rsplit('.', 1)
+	module_name = '.' + module_name
+	current_package = __loader__.name.rsplit('.', 1)[0]
+	module = importlib.import_module(module_name, current_package)
+	function = getattr(module, function_name)
+	return function
+
 class HintGenerator:
 	model_cache = {}
 	model_loader = lambda x: x
@@ -60,7 +73,8 @@ class HintGenerator:
 		max_distance = max(len(hint), len(word))
 		relative_distance = distance / max_distance
 		if relative_distance <= 0.5:
-			with open('logs/levenshtein.log', 'a', encoding='utf-8') as f:
+			levenshtein_log_file = os.path.join(config.logs_directory, 'levenshtein.log')
+			with open(levenshtein_log_file, 'a', encoding='utf-8') as f:
 				print('Excluding hint \'{}\' as candidate for word \'{}\' (LEVENSHTEIN = {}/{})'.format(hint, word, distance, max_distance), file=f)
 			return False
 		
@@ -89,3 +103,17 @@ class HintGenerator:
 				distance_matrix[i][j] = min(distance_matrix[i-1][j-1] + subs, distance_matrix[i-1][j] + insertion_cost, distance_matrix[i][j-1] + deletion_cost)
 		
 		return distance_matrix[l1][l2]
+
+class WeightedHintGenerator(HintGenerator):
+	def __init__(self, *args, weighting_method='weighting.t_score', weights=None, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.weighting_method = load_function_from_string(weighting_method) # lookup function indicated by weighting_method and replace it
+		self.weights = weights
+
+class ThresholdWeightedHintGenerator(HintGenerator):
+	def __init__(self, *args, weighting_methods=None, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.weighting_methods = tuple(
+			(load_function_from_string(weighting_method), top_n, threshold)
+			for weighting_method, top_n, threshold in weighting_methods
+		)

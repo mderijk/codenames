@@ -6,7 +6,7 @@ import math
 import gensim
 import numpy as np
 
-from .hintgenerator import HintGenerator
+from .hintgenerator import HintGenerator, WeightedHintGenerator, ThresholdWeightedHintGenerator
 from . import weighting
 
 class Word2vecHintGenerator(HintGenerator):
@@ -62,12 +62,10 @@ class AveragedWord2vecHintGenerator(Word2vecHintGenerator):
 		
 		return hint, number
 
-class WeightedWord2vecHintGenerator(Word2vecHintGenerator):
-	def __init__(self, *args, include_number=True, threshold=None, weighting_method=weighting.combined_max_score, weights=None, **kwargs):
+class WeightedWord2vecHintGenerator(Word2vecHintGenerator, WeightedHintGenerator):
+	def __init__(self, *args, include_number=True, threshold=None, **kwargs):
 		super().__init__(*args, include_number=include_number, **kwargs)
 		self.threshold = threshold
-		self.weighting_method = weighting_method
-		self.weights = weights
 	
 	def generateHints(self, positive_words, negative_words, neutral_words, assassin_words, previous_hints):
 		words_grouped = [positive_words, negative_words, neutral_words, assassin_words]
@@ -113,11 +111,7 @@ class WeightedWord2vecHintGenerator(Word2vecHintGenerator):
 		return hint, number
 
 # NOTE: the list of <weighting_methods> should be ordered by top_n in descending order
-class ThresholdWeightedWord2vecHintGenerator(WeightedWord2vecHintGenerator):
-	def __init__(self, *args, weighting_methods=None, **kwargs):
-		super().__init__(*args, **kwargs)
-		self.weighting_methods = weighting_methods
-	
+class ThresholdWeightedWord2vecHintGenerator(WeightedWord2vecHintGenerator, ThresholdWeightedHintGenerator):
 	def generateHints(self, positive_words, negative_words, neutral_words, assassin_words, previous_hints, verbose=True):
 		for weighting_method, top_n, threshold in self.weighting_methods:
 			# setup the right parameters for the model

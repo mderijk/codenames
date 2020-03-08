@@ -7,6 +7,14 @@ from . import lg
 from .. import config
 from .super import SuperHintGenerator
 
+def load_class_from_string(class_string):
+	module_name, class_name = class_string.rsplit('.', 1)
+	module_name = '.' + module_name
+	current_package = __loader__.name.rsplit('.', 1)[0]
+	module = importlib.import_module(module_name, current_package)
+	class_ = getattr(module, class_name)
+	return class_
+
 class HintServer:
 	def __init__(self, generators, log_directory):
 		self.generators = {}
@@ -16,11 +24,9 @@ class HintServer:
 		# create generator instances with appropriate logging mechanisms
 		for name in generators:
 			kwargs = config.GENERATORS[name]
-			module_name, class_name = kwargs['class'].rsplit('.', 1)
-			module_name = '.' + module_name
-			current_package = __loader__.name.rsplit('.', 1)[0]
-			module = importlib.import_module(module_name, current_package)
-			class_ = getattr(module, class_name)
+			
+			# lookup class indicated by kwargs['class'] and replace it
+			class_ = load_class_from_string(kwargs['class'])
 			del kwargs['class']
 			
 			generator_log_directory = os.path.join(log_directory, name)

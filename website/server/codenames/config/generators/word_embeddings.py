@@ -1,15 +1,9 @@
 
 word2vec_embeddings_model_cz = 'data/wiki.cs/wiki-czeng-filtered-top-10000.cs.vec'
 word2vec_embeddings_model_cz_v2 = 'data/wiki.cs/wiki-czeng-filtered-similar-top-1000-frequency-top-10000.cs.vec'
-collocations_model_cz = 'data/collocations/sentence_level_collocations_filtered_cz_v1.0.col'
-dependency_based_collocations_model_cz = 'data/collocations/dependency_level_collocations_filtered_cz_v1.0.col'
-syntactic_collocations_model_cz = 'data/collocations/syntactic_collocations_filtered_cz_v1.0.col'
 
 word2vec_embeddings_model_en = 'data/wiki.en/wiki-czeng-filtered-top-10000.en.vec'
 word2vec_embeddings_model_en_v2 = 'data/wiki.en/wiki-czeng-filtered-similar-top-1000-frequency-top-10000.en.vec'
-collocations_model_en = 'data/collocations/sentence_level_collocations_filtered_en_v1.0.col'
-dependency_based_collocations_model_en = 'data/collocations/dependency_level_collocations_filtered_en_v1.0.col'
-syntactic_collocations_model_en = 'data/collocations/syntactic_collocations_filtered_en_v1.0.col'
 
 GENERATORS = {
 	# sixth test run
