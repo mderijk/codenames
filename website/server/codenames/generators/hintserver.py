@@ -1,4 +1,5 @@
 
+import importlib
 import os
 import sys
 
@@ -15,7 +16,11 @@ class HintServer:
 		# create generator instances with appropriate logging mechanisms
 		for name in generators:
 			kwargs = config.GENERATORS[name]
-			class_ = kwargs['class']
+			module_name, class_name = kwargs['class'].rsplit('.', 1)
+			module_name = '.' + module_name
+			current_package = __loader__.name.rsplit('.', 1)[0]
+			module = importlib.import_module(module_name, current_package)
+			class_ = getattr(module, class_name)
 			del kwargs['class']
 			
 			generator_log_directory = os.path.join(log_directory, name)
