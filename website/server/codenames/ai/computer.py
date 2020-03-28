@@ -38,11 +38,14 @@ class AI:
 		# close connection and return server response
 		try:
 			response = connection.recv()
-			response = (response['word'], response['number'])
+			if response['status'] == 'success':
+				response = (response['word'], response['target_words'])
+			else:
+				response = ('A significant error occurred while generating hints. Please contact the author. (Internal Server Error)', None)
 		except EOFError:
-			response = 'A significant error occurred while generating hints. Please contact the author. (Internal Server Error)', None
+			response = ('A significant error occurred while generating hints. Please contact the author. (Internal Server Error)', None)
 		except ConnectionResetError:
-			response = 'The server was reset while processing your request. (Internal Server Error)', None
+			response = ('The server was reset while processing your request. (Internal Server Error)', None)
 		connection.close()
 		
 		return response

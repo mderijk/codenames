@@ -41,15 +41,19 @@ class HintServer:
 			positive_words, negative_words, neutral_words, assassin_words = request['positive_words'], request['negative_words'], request['neutral_words'], request['assassin_words']
 			previous_hints = request['previous_hints']
 			game_id = request['game_id']
-			word, number = generator.generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints)
+			word, target_words = generator.generateHint(game_id, positive_words, negative_words, neutral_words, assassin_words, previous_hints)
 			response = {
 				'status': 'success',
 				'word': word,
-				'number': number,
+				'target_words': target_words,
 			}
-			return response
 		else:
 			print('{} got a request without action or action was not \'hint\'. ({})'.format(request['generator'], repr(request)), file=sys.stderr)
+			response = {
+				'status': 'error',
+			}
+		
+		return response
 
 class SuperHintServer(HintServer):
 	def __init__(self, *args, **kwargs):

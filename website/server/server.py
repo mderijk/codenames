@@ -125,7 +125,7 @@ def getBoard(request, session):
 		'board': {
 			'cards': [],
 		},
-		'hints': session.game.hints[users_team],
+		'hints': [(hint, len(target_words)) for hint, target_words in session.game.hints[users_team]],
 		'score': session.game.getScoreByTeam(users_team),
 		'cards_left': session.game.getCardsLeftByTeam(users_team),
 		'turn': session.game.turn,
@@ -161,7 +161,8 @@ def getEnemyTurnInfo(request, session, turn_ended):
 def endTurn(request, session, response, turn_ended):
 	if turn_ended:
 		if not session.game.ended:
-			response['hint'] = session.game.hint # the new hint that was generated
+			hint, target_words = session.game.hint
+			response['hint'] = (hint, len(target_words)) # the new hint that was generated
 		
 		# info about the enemy's turn
 		enemy_turn = getEnemyTurnInfo(request, session, turn_ended)
@@ -184,6 +185,22 @@ def endTurn(request, session, response, turn_ended):
 		
 		# return the winner of the game
 		response['winner'] = session.game.winner
+		
+		# return all the hints along with the words that each hint targeted
+		hints = []
+		for hint, target_words in session.game.hints[users_team]:
+			# convert target words to card dictionaries
+			target_words_with_card_dicts = []
+			for word, score in target_words:
+				card = session.game.getCardByWord(word)
+				target_card_dict = {
+					'id': card.id,
+					'type': card.type,
+				}
+				target_words_with_card_dicts.append((target_card_dict, score))
+			
+			hints.append((hint, target_words_with_card_dicts))
+		response['hints'] = hints
 		
 		# disassociate game from session
 		game = session.game
@@ -292,7 +309,7 @@ def assembleHallOfFame(top_n=10):
 						score = int(score)
 						
 						if generator_name in scores_by_ai:
-							# add combo of username, score to the scores list
+							# add combination of username, score to the scores list
 							scores_by_ai[generator_name].append((score, username))
 	
 	# take the top_n scores for each list of scores

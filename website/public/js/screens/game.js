@@ -189,7 +189,7 @@ function Game(client, application) {
 				card_node.removeEventListener('click', card_click_function);
 			}
 			
-			// show the cards that were never flipped
+			// show the cards that were never flipped during the game
 			for (var i = 0; i < response.cards.length; i++) {
 				var card = response.cards[i];
 				this.flipOverCard(card, true);
@@ -205,10 +205,59 @@ function Game(client, application) {
 			// remove new hint button
 			this.new_hint_button.parentNode.removeChild(this.new_hint_button);
 			this.new_hint_button = null;
+			
+			// show the intended targets and their scores when hovering over a hint
+			if (response.hints !== undefined) {
+				var hint = response.hints[response.hints.length - 1],
+					target_cards = hint[1];
+				
+				this.addHintTargetWordsHover(this.current_hint, target_cards);
+				
+				for (var i = 0; i < this.hint_list.childNodes.length; i++) {
+					var hint_list_item = this.hint_list.childNodes[i];
+						hint = response.hints[this.hint_list.childNodes.length - 1 - i],
+						target_cards = hint[1];
+					
+					this.addHintTargetWordsHover(hint_list_item, target_cards);
+				}
+			}
 		}
 		
 		// remove the loading status again
 		application.clearStatus();
+	};
+	
+	this.addHintTargetWordsHover = function(node, target_cards) {
+		node.addEventListener('mouseover', function(e) {
+			for (var i = 0; i < target_cards.length; i++) {
+				var target_card = target_cards[i],
+					card = target_card[0],
+					score = target_card[0];
+				
+				this.addCardHighlight(card);
+				node.className = 'highlight';
+			}
+		}.bind(this));
+		node.addEventListener('mouseout', function(e) {
+			for (var i = 0; i < target_cards.length; i++) {
+				var target_card = target_cards[i],
+					card = target_card[0],
+					score = target_card[0];
+				
+				this.removeCardHighlight(card);
+				node.className = '';
+			}
+		}.bind(this));
+	};
+	
+	this.addCardHighlight = function(card) {
+		var card_node = this.board.childNodes[card.id];
+		card_node.className = 'card ' + card.type + ' target';
+	};
+	
+	this.removeCardHighlight = function(card) {
+		var card_node = this.board.childNodes[card.id];
+		card_node.className = 'card ' + card.type;
 	};
 	
 	this.selectCard = function(card_id) {
@@ -303,7 +352,7 @@ function Game(client, application) {
 	};
 	
 	this.newHint = function() {
-		// let the player know we are loading the game which might take time.
+		// let the player know we are generating a new hint which might take time.
 		application.setStatus('Generating new hint...');
 		
 		var data = {session_id: client.session.id, action: 'end_turn'};

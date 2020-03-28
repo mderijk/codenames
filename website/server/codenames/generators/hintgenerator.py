@@ -16,10 +16,11 @@ class HintGenerator:
 	model_cache = {}
 	model_loader = lambda x: x
 	
-	def __init__(self, model, logger, include_number=False, max_hint_number=None):
+	def __init__(self, model, logger, include_number=False, include_target_words=False, max_hint_number=None):
 		self.model = self._load_model(model)
 		self.logger = logger
 		self.include_number = include_number
+		self.include_target_words = include_target_words
 		self.max_hint_number = max_hint_number
 		self.scores = None
 	
@@ -41,19 +42,27 @@ class HintGenerator:
 			for hint, rating in potential_hints:
 				if all(map(lambda word: self.hint_filter(hint, word), positive_words + negative_words + neutral_words + assassin_words + previous_words)):
 					self.log.log('Generated hint \'{}\' with rating \'{}\''.format(hint, rating))
-					if self.include_number:
+					if self.include_number or self.include_target_words:
 						scores = self.scores[hint]
-						number = self.calculate_number(*scores)
+						scores_and_words = tuple(list(zip(group_words, group_scores)) for group_scores, group_words in zip(scores, (positive_words, negative_words, neutral_words, assassin_words)))
+						target_words = self.get_target_words(*scores_and_words)
 					else:
-						number = None
+						target_words = None
 					
-					return hint, number
+					return hint, target_words
 			
 			raise StopIteration('No suitable hint could be found.')
 	
-	def calculate_number(self, positive_words, negative_words, neutral_words, assassin_words):
-		highest_negative_rating = max(rating2 for rating2 in negative_words + neutral_words + assassin_words)
-		number_of_better_scoring_positive_words = sum(1 for rating in positive_words if rating >= highest_negative_rating) # "better scoring" means equal to or higher than the highest negative word
+	def get_target_words(self, positive_words_and_scores, negative_words_and_scores, neutral_words_and_scores, assassin_words_and_scores):
+		highest_negative_rating = max(rating2 for _, rating2 in negative_words_and_scores + neutral_words_and_scores + assassin_words_and_scores)
+		better_scoring_positive_words = [(word, rating) for word, rating in positive_words_and_scores if rating >= highest_negative_rating] # "better scoring" means equal to or higher than the highest negative word
+		if self.max_hint_number is not None:
+			better_scoring_positive_words = better_scoring_positive_words[:self.max_hint_number]
+		return better_scoring_positive_words
+	
+	def calculate_number(self, positive_scores, negative_scores, neutral_scores, assassin_scores):
+		highest_negative_rating = max(rating2 for rating2 in negative_scores + neutral_scores + assassin_scores)
+		number_of_better_scoring_positive_words = sum(1 for rating in positive_scores if rating >= highest_negative_rating) # "better scoring" means equal to or higher than the highest negative word
 		if self.max_hint_number is not None:
 			number_of_better_scoring_positive_words = min(self.max_hint_number, number_of_better_scoring_positive_words)
 		return number_of_better_scoring_positive_words

@@ -15,6 +15,7 @@ class Game:
 		self.users = users
 		self.history = []
 		self._cards = []
+		self._cards_by_word = {}
 #		self._points = [0, 0]
 		self.teams = teams
 #		self.teams = (('player1_username', 'ai1'), ('player2_username', 'ai2')) # teams are referred to by index (0 and 1)
@@ -37,6 +38,9 @@ class Game:
 			word = word.capitalize()
 			card = Card(id, label, word)
 			self._cards.append(card)
+			
+			word = word.lower()
+			self._cards_by_word[word.lower()] = card
 		
 		self.history.append((self.turn, 'Game id:', self.id))
 		self.history.append((self.turn, 'Game cards:', *self.getActiveWordsByType(team_index=0))) # [team_0], [team_1], [civilian], [assassin]
@@ -61,6 +65,10 @@ class Game:
 	@property
 	def cards(self):
 		return self._cards
+	
+	def getCardByWord(self, word):
+		word = word.lower()
+		return self._cards_by_word[word]
 	
 	def getActiveCardsByType(self, team_index=None):
 		if team_index is None:
@@ -112,7 +120,7 @@ class Game:
 			return
 		
 		self.hints[self.initiative].append(self.hint)
-		self.history.append((self.turn, 'New hint for team {}: \'{}\'. Relates to {} cards.'.format(self.initiative, *self.hint)))
+		self.history.append((self.turn, 'New hint for team {}: \'{}\'. Target cards and scores: {}'.format(self.initiative, *self.hint)))
 	
 	def endTurn(self):
 		self.turn += 1
