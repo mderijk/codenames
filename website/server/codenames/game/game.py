@@ -4,6 +4,7 @@ import random
 import uuid
 
 from .card import Card
+from .. import config
 
 class Game:
 	team_names = ('blue', 'red')
@@ -50,7 +51,7 @@ class Game:
 		# create game id and make sure it doesn't exist yet
 		while True:
 			id = str(uuid.uuid4())
-			game_file = 'data/games/{}.pickle'.format(id)
+			game_file = os.path.join(config.games_directory, '{}.pickle'.format(id))
 			
 			if not os.path.isfile(game_file):
 				break
