@@ -67,11 +67,13 @@ CzEng deserves a special mention, because it is used extensively in the creation
 In order to create any of the models, you will need to download [CzEng 1.6](https://ufal.mff.cuni.cz/czeng) and place the unzipped tar files in the `models/data/czeng` directory. (nested directories are no problem for the application)
 The conversion to CzEng 1.7 is handled by the application itself in `czeng_faulty_sections.py` and does not need to be performed manually.
 
-## Lexicons
+## Lexicon
+
+The game uses different lexicons for each language. The default lexicons for English and Czech are based on the 400 words included in the original board game.
 
 The naming scheme of the lexicons is strict: `original_<language code>.txt`. For example, the English lexicon would be stored in `original_en.txt`.
-The format of the lexicon is one entry per line, case insensitive. Casing is normalized when handling lexicons (all lowercase), so casing in lexicon files does not matter.
-Some of the models will produce a trimmed lexicon if the lexicon contains words that the model does not know. If such a shortened lexicon is produced, that lexicon should be used in the web application instead of the full version of the lexicon to avoid errors, because the generated model is only compatible with the trimmed lexicon.
+The format of the lexicon is one entry per line, case insensitive. Casing is normalized when handling lexicons (all words are lowercased), so the casing in lexicon files does not matter.
+Some of the models will produce a trimmed lexicon if the lexicon contains words that the model does not know. If such a shortened lexicon is produced, that lexicon should be used in the web application instead of the full version of the lexicon to avoid errors, because the generated model will only be compatible with the trimmed lexicon.
 
 ## Word embedding models
 
@@ -100,14 +102,14 @@ Example:
 
 ## Collocation models
 
-To create collocation models from the data in the czeng corpus, run:
+To create collocation models from the data in the CzEng corpus, run:
 ```shell
 > cd models
 > python3 collocations/filter.py cz
 > python3 collocations/filter.py en
 ```
-
 This generates both sentence-level as well as dependency-level collocations.
+
 
 # Future direction
 
