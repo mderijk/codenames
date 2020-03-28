@@ -29,31 +29,26 @@
 
 #board .card.blue {
 	background-color: #AAAAFF;
-	cursor: auto;
+	cursor: default;
 }
 
 #board .card.red {
 	background-color: #FFAAAA;
-	cursor: auto;
+	cursor: default;
 }
 
 #board .card.neutral {
 	background-color: #FADFAA;
-	cursor: auto;
+	cursor: default;
 }
 
 #board .card.assassin {
 	background-color: black;
 	color: white;
-	cursor: auto;
-}
-
-#board .card.post-game {
-	cursor: auto;
+	cursor: default;
 }
 
 #board .card.blue.post-game {
-	background-color: unset;
 	background: linear-gradient(130deg, #AAAAFF 0 20%, grey 20% 100%);
 }
 
@@ -70,8 +65,8 @@
 	color: black;
 }
 
-#board .card.post-game.target {
-	box-shadow: 0 0 10px #0000BB;
+#board .card.target {
+	box-shadow: 0 0 4px 2px #2222FF;
 }
 
 #current-hint {

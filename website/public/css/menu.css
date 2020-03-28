@@ -68,6 +68,7 @@
 }
 
 #menu {
+	max-width: 700px;
 	margin: 0 auto;
 	text-align: center;
 }
@@ -75,17 +76,19 @@
 #menu li {
 	display: inline-block;
 	height: 115px;
-	width: 200px;
+	min-width: 9em;
 	background-color: grey;
-	font-family: monospace;
 	font-size: 1.4em;
 	line-height: 115px;
 	list-style-type: none;
 	text-align: center;
-	vertical-align: center;
 	padding: 0;
 	margin: 10px;
 	box-sizing: border-box;
+}
+
+#menu li:hover {
+	border-bottom: 2px solid black;
 }
 
 .bottom-fill {
