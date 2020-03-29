@@ -4,7 +4,8 @@ import inspect
 import os
 import subprocess
 import sys
-from multiprocessing.connection import Listener
+import time
+from multiprocessing.connection import Client, Listener
 
 from codenames.config import SERVERS
 
@@ -25,9 +26,11 @@ def launchServer(server_name, socket):
 		# initiate and dispatch independent server processes
 		cwd = os.path.dirname(os.path.abspath(inspect.stack()[0][1]))
 		if sys.platform == 'win32':
-			subprocess.Popen([PYTHON_PATH, 'hintserver.py', server_name], cwd=cwd, creationflags=DETACHED_PROCESS) # NOTE: DETACHED_PROCESS is Windows only
+			process = subprocess.Popen([PYTHON_PATH, 'hintserver.py', server_name], cwd=cwd, creationflags=DETACHED_PROCESS) # NOTE: DETACHED_PROCESS is Windows only
 		else:
-			subprocess.Popen(['nohup', PYTHON_PATH, 'hintserver.py', server_name], cwd=cwd) # although not the same, nohup is the replacement for DETACHED_PROCESS
+			process = subprocess.Popen(['nohup', PYTHON_PATH, 'hintserver.py', server_name], cwd=cwd) # although not the same, nohup is the replacement for DETACHED_PROCESS
+		
+		return process
 
 def main():
 	# make sure errors are written to a log file
@@ -37,8 +40,59 @@ def main():
 	logfile = os.path.join(logdir, 'client.log')
 	sys.stderr = open(logfile, 'a')
 	
+	# boot servers
+	processes = {}
 	for server_name, server_config in SERVERS.items():
-		launchServer(server_name, server_config['socket'])
+		process = launchServer(server_name, server_config['socket'])
+		processes[server_name] = process
+	
+	# poll servers to make sure they booted correctly
+	while processes:
+		time.sleep(2)
+		
+		# send out a probe to each server
+		terminated_servers = []
+		booted_servers = []
+		for server_name, process in processes.items():
+			# make sure the process is still running
+			if process.returncode is not None:
+				print('Server \'{}\' failed to boot'.format(server_name))
+				terminated_servers.append(server_name)
+				continue
+			
+			# try to make contact
+			request = {
+				'action': 'poll'
+			}
+			try:
+				connection = Client(SERVERS[server_name]['socket'])
+			except ConnectionRefusedError as e:
+				terminated_servers.append(server_name)
+				continue
+			
+			# poll the server
+			connection.send(request)
+			
+			# close connection and return server response
+			try:
+				response = connection.recv()
+				if response['status'] == 'success':
+					print('Server \'{}\' booted successfully'.format(server_name))
+					booted_servers.append(server_name)
+				else:
+					print('Received incorrect response from server \'{}\' during polling'.format(server_name))
+					terminated_servers.append(server_name)
+			except EOFError:
+				print('Received unexpected end of file from server \'{}\' during polling'.format(server_name))
+				terminated_servers.append(server_name)
+			except ConnectionResetError:
+				print('The connection was reset during polling of server \'{}\''.format(server_name))
+				terminated_servers.append(server_name)
+			connection.close()
+		
+		# remove servers from waiting list for which we know that they have been booted successfully or failed to boot
+		for server_name in terminated_servers + booted_servers:
+			del processes[server_name]
 
 if __name__ == '__main__':
 	main()

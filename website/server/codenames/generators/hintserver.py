@@ -35,7 +35,11 @@ class HintServer:
 			self.generators[name] = class_(**kwargs, logger=logger)
 	
 	def handleRequest(self, request):
-		if 'action' in request and request['action'] == 'hint':
+		if 'action' in request and request['action'] == 'poll':
+			response = {
+				'status': 'success',
+			}
+		elif 'action' in request and request['action'] == 'hint':
 			generator_name = request['generator']
 			generator = self.generators[generator_name]
 			positive_words, negative_words, neutral_words, assassin_words = request['positive_words'], request['negative_words'], request['neutral_words'], request['assassin_words']
