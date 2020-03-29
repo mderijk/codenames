@@ -44,7 +44,8 @@ def main():
 	processes = {}
 	for server_name, server_config in SERVERS.items():
 		process = launchServer(server_name, server_config['socket'])
-		processes[server_name] = process
+		if process:
+			processes[server_name] = process
 	
 	# poll servers to make sure they booted correctly
 	while processes:
@@ -55,9 +56,13 @@ def main():
 		booted_servers = []
 		for server_name, process in processes.items():
 			# make sure the process is still running
-			if process.returncode is not None:
-				print('Server \'{}\' failed to boot'.format(server_name))
-				terminated_servers.append(server_name)
+			try:
+				if process.returncode is not None:
+					print('Server \'{}\' failed to boot'.format(server_name))
+					terminated_servers.append(server_name)
+					continue
+			except AttributeError as e:
+				print(server_name)
 				continue
 			
 			# try to make contact
