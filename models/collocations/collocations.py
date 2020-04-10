@@ -19,7 +19,7 @@ def load_lexicon(filename):
 def get_sentences(language, keep_dependencies=False, keep_parts_of_speech=False):
 	if language in ('en', 'cz'):
 		import czeng
-		corpus_directory = os.path.join('E:\\u3c\master\CZ_codenames\models\data\czeng') # E:\\u3c\master\CZ_codenames\models\data\czeng (cd E:\tendev\webserver\www\codenames\models & collocations\collocations.py)
+		corpus_directory = os.path.join('data', 'çzeng')
 		sentences = czeng.open_filtered_files(corpus_directory, language, keep_dependencies=keep_dependencies, keep_parts_of_speech=keep_parts_of_speech, verbose=True)
 	else:
 		raise Exception('Unknown language \'{}\'.'.format(language))
