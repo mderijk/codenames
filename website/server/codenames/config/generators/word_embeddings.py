@@ -1,9 +1,7 @@
 
 word2vec_embeddings_model_cz = 'data/wiki.cs/wiki-czeng-filtered-top-10000.cs.vec'
-word2vec_embeddings_model_cz_v2 = 'data/wiki.cs/wiki-czeng-filtered-similar-top-1000-frequency-top-10000.cs.vec'
 
 word2vec_embeddings_model_en = 'data/wiki.en/wiki-czeng-filtered-top-10000.en.vec'
-word2vec_embeddings_model_en_v2 = 'data/wiki.en/wiki-czeng-filtered-similar-top-1000-frequency-top-10000.en.vec'
 
 GENERATORS = {
 	# sixth test run
