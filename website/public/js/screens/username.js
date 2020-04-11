@@ -66,8 +66,11 @@ function Username(application, client) {
 		var consent_wrapper = document.createElement('div');
 		this.consent = document.createElement('input');
 		this.consent.type = 'checkbox';
+		this.consent.id = 'consent';
 		this.consent.required = true;
-		var consent_text = document.createTextNode(' I agree that the anonymized data of the games I play can be used for research purposes.');
+		var consent_text = document.createElement('label');
+		consent_text.htmlFor = 'consent';
+		consent_text.textContent = ' I agree that the anonymized data of the games I play can be used for research purposes.';
 		consent_wrapper.appendChild(this.consent);
 		consent_wrapper.appendChild(consent_text);
 		
