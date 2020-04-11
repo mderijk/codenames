@@ -247,6 +247,7 @@ class Application(modules.Games, modules.HallOfFame):
 					target_card_dict = {
 						'id': card.id,
 						'type': card.type,
+						'flipped': card.flipped,
 					}
 					target_words_with_card_dicts.append((target_card_dict, score))
 				

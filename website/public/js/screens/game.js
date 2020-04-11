@@ -251,13 +251,25 @@ function Game(client, application) {
 	};
 	
 	this.addCardHighlight = function(card) {
+		var post_game;
+		if (card.flipped) {
+			post_game = '';
+		} else {
+			post_game = ' post-game';
+		}
 		var card_node = this.board.childNodes[card.id];
-		card_node.className = 'card ' + card.type + ' target';
+		card_node.className = 'card ' + card.type + post_game + ' target';
 	};
 	
 	this.removeCardHighlight = function(card) {
+		var post_game;
+		if (card.flipped) {
+			post_game = '';
+		} else {
+			post_game = ' post-game';
+		}
 		var card_node = this.board.childNodes[card.id];
-		card_node.className = 'card ' + card.type;
+		card_node.className = 'card ' + card.type + post_game;
 	};
 	
 	this.selectCard = function(card_id) {
@@ -271,9 +283,9 @@ function Game(client, application) {
 		}.bind(this));
 	};
 	
-	this.flipOverCard = function(card, flipped) {
+	this.flipOverCard = function(card, is_post_game) {
 		var post_game;
-		if (flipped) {
+		if (is_post_game) {
 			post_game = ' post-game';
 		} else {
 			post_game = '';
