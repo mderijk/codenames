@@ -107,6 +107,7 @@ function Settings(application, client) {
 		client.sendRequest(data, function(response) {
 			// save the newly created session locally
 			client.session.language = language;
+			client.saveSession();
 			
 			// switch to the menu
 			application.showMenu();
