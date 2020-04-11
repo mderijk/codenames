@@ -16,6 +16,7 @@ class Application(modules.Games, modules.HallOfFame):
 		if not self._require(request, 'action'):
 			response = self.missing('action')
 		elif request['action'] == 'new_session':
+			# make sure username and language contain valid information
 			if not self._require(request, 'username'):
 				response = self.missing('username')
 				return response
@@ -28,12 +29,20 @@ class Application(modules.Games, modules.HallOfFame):
 				self.error('Invalid \'language\'')
 				return response
 			
-			# filter surrounding whitespace for username before trusting it blindly
-			# also do some lowercasing so Admin and admin aren't two completely different users
 			username = request['username']
-			username = username.strip()
+			
+			# restrict usernames to alphabetical characters, numbers and underscores
+			if any(map(lambda char: not (char.isalnum() or char == '_'), username)):
+				response = {
+					'status': 'invalid',
+					'invalid': 'username',
+				}
+				return response
+			
+			# perform lowercasing so Admin and admin aren't two completely different users
 			username = username.lower()
 			
+			# create a new session and return the session id
 			session = self.createSession(username, request['language'])
 			response = {
 				'status': 'success',
@@ -53,7 +62,7 @@ class Application(modules.Games, modules.HallOfFame):
 		return response
 	
 	def handleRequest(self, request, session):
-		if session.game is not None: # TODO: this handles things correctly, except for the fact that it tells you: unsupported action, if you try to do an action that can only be done while in game. The error message for an action that does not exist and one that doesn't make sense in the current context, mhm, should preferably be different. -> If you do manage to produce a different error message, would you be so kind as to handle this error message in the Javascript as well? Then you can just set session.in_game to false and reload the page and everybody will be happy. 
+		if session.game is not None:
 			response = self.handleGameRequest(request, session)
 			if response:
 				return response

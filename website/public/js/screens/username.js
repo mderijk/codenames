@@ -3,6 +3,7 @@
 function Username(application, client) {
 	this.username_form = null;
 	this.username = null;
+	this.username_explanation = null;
 	this.language_select = null;
 	this.consent = null;
 	
@@ -26,6 +27,12 @@ function Username(application, client) {
 		this.username.placeholder = 'choose a username';
 		this.username.required = true;
 		username_wrapper.appendChild(this.username);
+		
+		// create username explanation
+		this.username_explanation = document.createElement('span');
+		this.username_explanation.className = 'username-explanation';
+		this.username_explanation.textContent = 'Username may contain only alphabetical characters, numbers and underscores.';
+		username_wrapper.appendChild(this.username_explanation);
 		
 		// create language select
 		var language_select_wrapper = document.createElement('div');
@@ -95,6 +102,7 @@ function Username(application, client) {
 		this.username_form.parentNode.removeChild(this.username_form);
 		
 		this.username = null;
+		this.username_explanation = null;
 		this.language_select = null;
 		this.username_form = null;
 	};
@@ -110,11 +118,18 @@ function Username(application, client) {
 			'language': language,
 		};
 		client.sendRequest(data, function(response) {
-			// save the newly created session locally
-			client.createSession(response.session_id, username, language);
-			
-			// switch to the menu
-			application.showMenu();
+			if (response.status === 'invalid') {
+				if (response.invalid === 'username') {
+					this.username.className = 'invalid'; // mark the username field as invalid
+					this.username_explanation.className = 'username-explanation display'; // show username explanation
+				}
+			} else {
+				// save the newly created session locally
+				client.createSession(response.session_id, username, language);
+				
+				// switch to the menu
+				application.showMenu();
+			}
 		}.bind(this));
 	};
 }

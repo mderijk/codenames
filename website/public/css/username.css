@@ -11,3 +11,18 @@
 #username-form legend {
 	padding: 0 0.5em;
 }
+
+.username-explanation {
+	display: none;
+	color: red;
+	font-style: italic;
+	margin-left: 1em;
+}
+
+.username-explanation.display {
+	display: initial;
+}
+
+.invalid {
+	box-shadow: red 0 0 2px 1px;
+}
