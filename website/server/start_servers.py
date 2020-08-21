@@ -7,7 +7,7 @@ import sys
 import time
 from multiprocessing.connection import Client, Listener
 
-from codenames.config import SERVERS
+from config import SERVERS
 
 if sys.platform == 'win32': # windows
 	PYTHON_PATH = 'venv\Scripts\python'

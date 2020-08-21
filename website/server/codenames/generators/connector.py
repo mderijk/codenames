@@ -4,14 +4,13 @@ import os
 import socket
 import sys
 
-from .. import config
 from .protocol import Protocol
 
 # Connector class
 class Connector:
-	def __init__(self, socket=('localhost', 3063), logfile=os.path.join(config.logs_directory, 'connector.log'), protocol=None):
+	def __init__(self, socket, logs_directory, protocol=None):
 		self.socket = socket
-		self.logfile = logfile
+		self.logfile = os.path.join(logs_directory, 'connector.log')
 		if protocol is None:
 			protocol = Protocol()
 		self.protocol = protocol

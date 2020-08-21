@@ -4,7 +4,6 @@ import os
 import sys
 
 from . import lg
-from .. import config
 from .super import SuperHintGenerator
 
 def load_class_from_string(class_string):
@@ -16,23 +15,23 @@ def load_class_from_string(class_string):
 	return class_
 
 class HintServer:
-	def __init__(self, generators, log_directory):
+	def __init__(self, generators, logs_directory, generator_configs):
 		self.generators = {}
-		self.log_directory = log_directory
+		self.logs_directory = logs_directory
 		self.model_cache = {}
 		
 		# create generator instances with appropriate logging mechanisms
 		for name in generators:
-			kwargs = config.GENERATORS[name]
+			kwargs = generator_configs[name]
 			
 			# lookup class indicated by kwargs['class'] and replace it
 			class_ = load_class_from_string(kwargs['class'])
 			del kwargs['class']
 			
-			generator_log_directory = os.path.join(log_directory, name)
+			generator_log_directory = os.path.join(logs_directory, name)
 			os.makedirs(generator_log_directory, exist_ok=True)
 			logger = lg.Logger(generator_log_directory)
-			self.generators[name] = class_(**kwargs, logger=logger)
+			self.generators[name] = class_(**kwargs, logger=logger, logs_directory=logs_directory)
 	
 	def handleRequest(self, request):
 		if 'action' in request and request['action'] == 'poll':

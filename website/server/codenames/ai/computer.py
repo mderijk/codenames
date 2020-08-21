@@ -2,14 +2,11 @@
 from multiprocessing.connection import Client
 import sys
 
-from .. import config
-
 class AI:
 	def __init__(self, name):
 		self.name = name
-		self.socket = config.GENERATOR_SOCKETS[name]
 	
-	def generateHint(self, game_id, positive_words, negative_words, neutral_words, assassin_words, n=20, previous_hints=None):
+	def generateHint(self, game_id, positive_words, negative_words, neutral_words, assassin_words, generator_sockets, n=20, previous_hints=None):
 		if previous_hints is None:
 			previous_hints = []
 		
@@ -25,9 +22,10 @@ class AI:
 		}
 		
 		# connect to the hint generation server
+		socket = generator_sockets[self.name]
 		connection = None
 		try:
-			connection = Client(self.socket)
+			connection = Client(socket)
 		except ConnectionRefusedError as e:
 			print('{} server is being queried, but not running.'.format(self.name), file=sys.stderr)
 			return None

@@ -5,7 +5,7 @@ import json
 import os
 import sys
 
-import codenames.config as config
+import config
 
 def server():
 	from application import Application # import locally so we can capture error messages

@@ -4,13 +4,13 @@ import random
 import uuid
 
 from .card import Card
-from .. import config
 
 class Game:
 	team_names = ('blue', 'red')
 	team_card_colors = ('blue', 'red')
 	
-	def __init__(self, users, possible_words, teams, initiative=None):
+	def __init__(self, users, possible_words, teams, games_directory, generator_sockets, initiative=None):
+		self.games_directory = games_directory
 		self.id = self._generateId()
 		self.users = users
 		self.history = []
@@ -19,6 +19,7 @@ class Game:
 #		self._points = [0, 0]
 		self.teams = teams
 #		self.teams = (('player1_username', 'ai1'), ('player2_username', 'ai2')) # teams are referred to by index (0 and 1)
+		self.generator_sockets = generator_sockets
 		self.hint = None
 		self.hints = tuple([] for _ in self.teams)
 		self.winner = None
@@ -55,7 +56,7 @@ class Game:
 		# create game id and make sure it doesn't exist yet
 		while True:
 			id = str(uuid.uuid4())
-			game_file = os.path.join(config.games_directory, '{}.pickle'.format(id))
+			game_file = os.path.join(self.games_directory, '{}.pickle'.format(id))
 			
 			if not os.path.isfile(game_file):
 				break
@@ -113,7 +114,7 @@ class Game:
 		
 		# generate hint and log it
 		previous_hints = [(word, number) for word, number in self.hints[self.initiative] if word] # filter out potential None types generated when the hint servers were offline.
-		self.hint = current_team.spymaster.generateHint(self.id, positive_words, negative_words, neutral_words, assassin_words, previous_hints=previous_hints)
+		self.hint = current_team.spymaster.generateHint(self.id, positive_words, negative_words, neutral_words, assassin_words, generator_sockets=self.generator_sockets, previous_hints=previous_hints)
 		if self.hint is None:
 			self.hint = (None, None)
 			self.history.append(('ERROR', 'Received NoneType hint. Hint servers might be offline.'))

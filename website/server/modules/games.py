@@ -37,15 +37,18 @@ class Games(sessions.Sessions):
 		
 		users = [session.user_id, None]
 		generator_names_by_language = self.config.GENERATOR_NAMES_BY_LANGUAGE[session.language]
-		weighted_options = self.getWeightedOptions(generator_names_by_language, k=10) # Make sure an equal amount of games gets played for all models up to a certain threshold k
+		weighted_options = self.getWeightedOptions(generator_names_by_language, k=10) # Make sure an equal amount of games get played for all models up to a certain threshold k
 		ai_name = random.choice(weighted_options) # Make sure an equal amount of games gets played for all models up to a certain threshold k
 #		ai_name = random.choice(generator_names_by_language)
-		game = SinglePlayerGame(users, words, ai_name=ai_name)
+		game = SinglePlayerGame(users, words, games_directory=self.config.games_directory, generator_sockets=self.config.GENERATOR_SOCKETS, ai_name=ai_name)
 		return game
 	
 	def getGame(self, game_file):
 		with open(game_file, 'rb') as f:
 			game = pickle.load(f)
+		
+		# tack on the new GENERATOR_SOCKETS (in case the server config was changed during the game)
+		game.generator_sockets = self.config.GENERATOR_SOCKETS
 		
 		return game
 

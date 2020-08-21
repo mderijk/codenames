@@ -2,8 +2,6 @@
 import importlib
 import os
 
-from .. import config
-
 def load_function_from_string(function_string):
 	module_name, function_name = function_string.rsplit('.', 1)
 	module_name = '.' + module_name
@@ -16,9 +14,10 @@ class HintGenerator:
 	model_cache = {}
 	model_loader = lambda x: x
 	
-	def __init__(self, model, logger, include_number=False, include_target_words=False, max_hint_number=None):
+	def __init__(self, model, logger, logs_directory, include_number=False, include_target_words=False, max_hint_number=None):
 		self.model = self._load_model(model)
 		self.logger = logger
+		self.logs_directory = logs_directory
 		self.include_number = include_number
 		self.include_target_words = include_target_words
 		self.max_hint_number = max_hint_number
@@ -67,8 +66,7 @@ class HintGenerator:
 			number_of_better_scoring_positive_words = min(self.max_hint_number, number_of_better_scoring_positive_words)
 		return number_of_better_scoring_positive_words
 	
-	@classmethod
-	def hint_filter(cls, hint, word):
+	def hint_filter(self, hint, word):
 		# substring filter
 		if hint in word or word in hint:
 			return False
@@ -78,11 +76,11 @@ class HintGenerator:
 			return False
 		
 		# levenshtein distance filter
-		distance = cls.levenshtein_distance(hint, word)
+		distance = self.levenshtein_distance(hint, word)
 		max_distance = max(len(hint), len(word))
 		relative_distance = distance / max_distance
 		if relative_distance <= 0.5:
-			levenshtein_log_file = os.path.join(config.logs_directory, 'levenshtein.log')
+			levenshtein_log_file = os.path.join(self.logs_directory, 'levenshtein.log')
 			with open(levenshtein_log_file, 'a', encoding='utf-8') as f:
 				print('Excluding hint \'{}\' as candidate for word \'{}\' (LEVENSHTEIN = {}/{})'.format(hint, word, distance, max_distance), file=f)
 			return False

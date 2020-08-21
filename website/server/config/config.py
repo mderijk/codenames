@@ -1,9 +1,12 @@
 
+# Config file for Codenames
+
 import os
 
-# Config file
-
+## where to store logs and error messages:
 logs_directory = 'logs'
+
+## where to store user data:
 data_directory = 'data'
 
 hints_log_directory = os.path.join(data_directory, 'hints')
@@ -15,8 +18,11 @@ scores_directory = os.path.join(data_directory, 'scores')
 sessions_directory = os.path.join(data_directory, 'sessions')
 users_directory = os.path.join(data_directory, 'users')
 
+## which languages you want to support:
 LANGUAGES = ['cz', 'en']
 
+## load balancing for when you want to test multiple hint generation algorithms at the same time:
+### Each server represents a separate python process. The idea is that when, for example a CZ and an EN player in different games ask for a hint, they don't have to wait for the other person's hint to be generated.
 SERVERS = {
 	'word2vec_cz': {
 		'socket': ('localhost', 3063),
@@ -33,7 +39,7 @@ SERVERS = {
 #				'word2vec_weighted_top_combined_cz_v1.0',
 #				'word2vec_weighted_top_combined_cz_v1.1',
 			],
-			'log_directory': hints_log_directory,
+			'logs_directory': hints_log_directory,
 		},
 	},
 	'word2vec_en': {
@@ -48,7 +54,7 @@ SERVERS = {
 #				'word2vec_weighted_top_combined_en_v1.0',
 #				'word2vec_weighted_top_combined_en_v1.1',
 			],
-			'log_directory': hints_log_directory,
+			'logs_directory': hints_log_directory,
 		},
 	},
 	'collocations_cz': {
@@ -58,7 +64,7 @@ SERVERS = {
 #				'collocations_combined_max_score_cz_v1.0',
 #				'syntactic_collocations_combined_top_3_cz_v1.0',
 			],
-			'log_directory': hints_log_directory,
+			'logs_directory': hints_log_directory,
 		},
 	},
 	'collocations_en': {
@@ -68,7 +74,7 @@ SERVERS = {
 #				'collocations_combined_max_score_en_v1.0',
 				'syntactic_collocations_combined_top_3_en_v1.0',
 			],
-			'log_directory': hints_log_directory,
+			'logs_directory': hints_log_directory,
 		},
 	},
 	'dependency_based_collocations_cz': {
@@ -83,7 +89,7 @@ SERVERS = {
 #				'dependency_based_collocations_top_combined_cz_v1.0',
 #				'dependency_based_collocations_top_combined_cz_v1.1',
 			],
-			'log_directory': hints_log_directory,
+			'logs_directory': hints_log_directory,
 		},
 	},
 	'dependency_based_collocations_en': {
@@ -98,7 +104,7 @@ SERVERS = {
 #				'dependency_based_collocations_top_combined_en_v1.0',
 #				'dependency_based_collocations_top_combined_en_v1.1',
 			],
-			'log_directory': hints_log_directory,
+			'logs_directory': hints_log_directory,
 		},
 	},
 	'super_cz': {
@@ -110,7 +116,7 @@ SERVERS = {
 #				'dep_col_and_word_embeddings_combined_cz_v1.0',
 #				'dep_col_and_word_embeddings_combined_threshold_cz_v1.0',
 			],
-			'log_directory': hints_log_directory,
+			'logs_directory': hints_log_directory,
 		},
 	},
 	'super_en': {
@@ -122,14 +128,15 @@ SERVERS = {
 #				'dep_col_and_word_embeddings_combined_en_v1.0',
 #				'dep_col_and_word_embeddings_combined_threshold_en_v1.0',
 			],
-			'log_directory': hints_log_directory,
+			'logs_directory': hints_log_directory,
 		},
 	},
 }
 
-# active AI
+## active hint generation models (AI) and their names as shown to the user:
+### (un)comment a line to enable/disable an AI.
 AI_NAMES = {
-#	'word2vec_weighted_top_combined_cz_v1.0': 'AI 0',
+	'word2vec_weighted_top_combined_cz_v1.0': 'AI 0',
 #	'dependency_based_collocations_top_combined_cz_v1.0': 'AI 1',
 #	'dep_col_and_word_embeddings_combined_cz_v1.0': 'AI 2',
 #	'dep_col_and_word_embeddings_combined_threshold_cz_v1.0': 'AI 3',
@@ -138,15 +145,4 @@ AI_NAMES = {
 #	'dependency_based_collocations_top_combined_en_v1.0': 'AI 1',
 #	'dep_col_and_word_embeddings_combined_en_v1.0': 'AI 2',
 #	'dep_col_and_word_embeddings_combined_threshold_en_v1.0': 'AI 3',
-}
-
-GENERATOR_NAMES = [generator_name for _, server_data in SERVERS.items() for generator_name in server_data['config']['generators'] if generator_name in AI_NAMES]
-GENERATOR_NAMES_BY_LANGUAGE = {
-	language: [generator_name for generator_name in GENERATOR_NAMES if '_{}_'.format(language) in generator_name]
-	for language in LANGUAGES
-}
-
-GENERATOR_SOCKETS = {
-	generator_name: server_data['socket']
-	for name, server_data in SERVERS.items() for generator_name in server_data['config']['generators']
 }

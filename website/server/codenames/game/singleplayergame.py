@@ -6,7 +6,7 @@ from .game import Game
 from .team import Team
 
 class SinglePlayerGame(Game):
-	def __init__(self, users, possible_words, ai_name=None, teams=None):
+	def __init__(self, users, possible_words, games_directory, generator_sockets, ai_name=None, teams=None):
 		if teams is None and ai_name is not None:
 			team = Team(
 				ai.AI(ai_name),
@@ -21,7 +21,7 @@ class SinglePlayerGame(Game):
 		# make sure the player begins and is always blue
 		initiative = 0
 		
-		super().__init__(users, possible_words, teams=teams, initiative=initiative)
+		super().__init__(users, possible_words, teams=teams, games_directory=games_directory, generator_sockets=generator_sockets, initiative=initiative)
 		
 		self.last_enemy_turn = None
 	

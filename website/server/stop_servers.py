@@ -6,7 +6,7 @@ import time
 import json
 from multiprocessing.connection import Client
 
-from codenames.config import SERVERS
+from config import SERVERS
 
 def stopServer(server_name, socket):
 	# establish communications
