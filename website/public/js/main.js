@@ -29,6 +29,7 @@ function Application(client, wizard) {
 	
 	this.showUsername = function() {
 		wizard.show('username');
+		this.setDefaultStatus('');
 	};
 	
 	this.showHallOfFame = function() {
@@ -67,6 +68,26 @@ function Application(client, wizard) {
 			console.log('Session created on incompatible version, deleting old session.');
 			client.session = null;
 		}
+		
+		// overwrite the client's default error handler
+		client.onError = function(response) {
+			if (response.error === 'Session timed out') {
+				// send the user back to the login screen if their session timed out
+				client.deleteSession(); // removes session information from local storage
+				client.session.timed_out = true;
+				this.showUsername();
+			} else if (response.error === 'Game has already ended') {
+				console.log('ERROR:', response.error);
+				console.log('Attempting fix...');
+				client.session.in_game = false;
+				client.saveSession();
+				console.log('Refreshing page...');
+				console.log('Please report the issue if this did not solve it.');
+				window.location.reload();
+			} else {
+				console.log('ERROR:', response.error);
+			}
+		}.bind(this);
 		
 		// create status bar
 		this.status_bar = document.createElement('div');

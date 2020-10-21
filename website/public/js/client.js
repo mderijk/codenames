@@ -26,24 +26,15 @@ function Client() {
 		this.sendAjaxRequest('client.php', data, function(response) {
 			this.request_lock = false;
 			if (response.status === 'error') {
-				this.handleError(response);
+				this.onError(response);
 			} else if (callback !== undefined) {
 				callback(response);
 			}
 		}.bind(this));
 	};
 	
-	this.handleError = function(response) {
+	this.onError = function(response) {
 		console.log('ERROR:', response.error);
-		
-		if (response.error === 'Game has already ended') {
-			console.log('Attempting fix...');
-			this.session.in_game = false;
-			this.saveSession();
-			console.log('Refreshing page...');
-			console.log('Please report the issue if this did not solve it.');
-			window.location.reload();
-		}
 	}
 	
 	this.createSession = function(id, username, language) {
@@ -53,11 +44,18 @@ function Client() {
 		this.session.username = username;
 		this.session.language = language;
 		this.session.in_game = false;
+		this.session.timed_out = false;
 		
 		this.saveSession();
 	};
 	
 	this.saveSession = function() {
+		// save the session in local storage so that it persists after page refresh
 		localStorage.setItem('session', JSON.stringify(this.session));
+	}
+	
+	this.deleteSession = function() {
+		// prevent the session from persisting after page refresh
+		localStorage.removeItem('session');
 	}
 }

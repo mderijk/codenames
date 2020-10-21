@@ -96,7 +96,17 @@ function Username(application, client) {
 		fieldset.appendChild(consent_wrapper);
 		fieldset.appendChild(submit_button);
 		
+		// create session timed out message
+		var session_timed_out = document.createElement('span');
+		if (client.session !== null && client.session.timed_out === true) {
+			session_timed_out.className = 'session-timed-out display';
+		} else {
+			session_timed_out.className = 'session-timed-out';
+		}
+		session_timed_out.textContent = 'Your session has timed out, please log in again to continue.';
+		
 		this.username_form.appendChild(fieldset);
+		this.username_form.appendChild(session_timed_out);
 		
 		container.appendChild(this.username_form);
 	};
@@ -104,10 +114,11 @@ function Username(application, client) {
 	this.destroy = function() {
 		this.username_form.parentNode.removeChild(this.username_form);
 		
+		this.username_form = null;
 		this.username = null;
 		this.username_explanation = null;
 		this.language_select = null;
-		this.username_form = null;
+		this.consent = null;
 	};
 	
 	this.addLanguageOption = function(name, value) {

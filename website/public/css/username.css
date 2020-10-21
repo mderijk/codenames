@@ -6,20 +6,24 @@
 #username-form fieldset {
 	padding: 1em;
 	border-radius: 10px;
+	margin-bottom: 1em;
 }
 
 #username-form legend {
 	padding: 0 0.5em;
 }
 
-.username-explanation {
+.session-timed-out, .username-explanation {
 	display: none;
 	color: red;
-	font-style: italic;
 	margin-left: 1em;
 }
 
-.username-explanation.display {
+.username-explanation {
+	font-style: italic;
+}
+
+.session-timed-out.display, .username-explanation.display {
 	display: initial;
 }
 
