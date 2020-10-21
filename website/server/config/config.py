@@ -21,6 +21,13 @@ users_directory = os.path.join(data_directory, 'users')
 ## which languages you want to support:
 LANGUAGES = ['cz', 'en']
 
+## automatically boot the hint servers when a user logs in:
+autostart = False
+
+## ask users to log in again after a certain amount of time so we can shut down the servers when no active sessions exist:
+session_timeout = 30 * 60 # seconds
+server_timeout = session_timeout # if <autostart> is True, hint generation servers automatically shutdown after not being queried for <server_timeout> seconds
+
 ## load balancing for when you want to test multiple hint generation algorithms at the same time:
 ### Each server represents a separate python process. The idea is that when, for example a CZ and an EN player in different games ask for a hint, they don't have to wait for the other person's hint to be generated.
 SERVERS = {
@@ -72,7 +79,7 @@ SERVERS = {
 		'config': {
 			'generators': [
 #				'collocations_combined_max_score_en_v1.0',
-				'syntactic_collocations_combined_top_3_en_v1.0',
+#				'syntactic_collocations_combined_top_3_en_v1.0',
 			],
 			'logs_directory': hints_log_directory,
 		},
@@ -111,7 +118,7 @@ SERVERS = {
 		'socket': ('localhost', 3066),
 		'config': {
 			'generators': [
-#				'word2vec_weighted_top_combined_cz_v1.0',
+				'word2vec_weighted_top_combined_cz_v1.0',
 #				'dependency_based_collocations_top_combined_cz_v1.0',
 #				'dep_col_and_word_embeddings_combined_cz_v1.0',
 #				'dep_col_and_word_embeddings_combined_threshold_cz_v1.0',

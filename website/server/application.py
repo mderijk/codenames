@@ -1,4 +1,5 @@
 
+import datetime
 import os
 
 import modules
@@ -54,6 +55,11 @@ class Application(modules.Games, modules.HallOfFame):
 			session = self.getSession(request['session_id'])
 			if not session:
 				response = self.error('Invalid \'session_id\'')
+				return response
+			
+			# check if the session has timed out
+			if session.last_seen + datetime.timedelta(seconds=self.config.session_timeout) < datetime.datetime.now():
+				response = self.error('Session timed out')
 				return response
 			
 			response = self.handleRequest(request, session)

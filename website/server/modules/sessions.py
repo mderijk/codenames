@@ -1,4 +1,5 @@
 
+import datetime
 import pickle
 import os
 import uuid
@@ -27,6 +28,7 @@ class Session:
 		self.username = username
 		self.language = language
 		self.game = game
+		self.last_seen = datetime.datetime.now()
 	
 	def _generateId(self, sessions_directory):
 		# create session id and make sure it doesn't exist yet
@@ -94,6 +96,9 @@ class Sessions(module.Module):
 		return session
 	
 	def saveSession(self, session):
+		self.last_seen = datetime.datetime.now()
+		
+		# save session to disk
 		session_file = os.path.join(self.config.sessions_directory, '{}.pickle'.format(session.id))
 		with open(session_file, 'wb') as f:
 			pickle.dump(session, f)
