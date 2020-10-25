@@ -93,11 +93,12 @@ class Sessions(module.Module):
 		# load session object from disk
 		session = self.loadSession(session_file)
 		
+		# update last seen date
+		self.last_seen = datetime.datetime.now()
+		
 		return session
 	
 	def saveSession(self, session):
-		self.last_seen = datetime.datetime.now()
-		
 		# save session to disk
 		session_file = os.path.join(self.config.sessions_directory, '{}.pickle'.format(session.id))
 		with open(session_file, 'wb') as f:
