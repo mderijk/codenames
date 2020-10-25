@@ -3,7 +3,7 @@
 function Client() {
 	this.request_lock = false;
 	this.session = JSON.parse(localStorage.getItem('session')); // id, username, in_game
-	this.version = '1.5.4';
+	this.version = '1.6.0';
 	
 	this.sendAjaxRequest = function(url, data, callback) {
 		if (this.request_lock === false) {
