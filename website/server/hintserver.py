@@ -18,7 +18,12 @@ def server(name):
 		
 		# event loop
 		while True:
-			request = connector.receive()
+			timeout = config.server_timeout if config.autostart else None
+			request = connector.receive(timeout=timeout)
+			
+			# if nothing has been received for timeout seconds, we shut down the server
+			if not request:
+				break
 			
 			# check if we should quit
 			if request['action'] == 'exit':

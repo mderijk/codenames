@@ -1,8 +1,10 @@
 
 import datetime
 import os
+import sys
 
 import modules
+from start_servers import launchPythonProcess, pollServers
 
 class Application(modules.Games, modules.HallOfFame):
 	def route(self, request):
@@ -43,8 +45,14 @@ class Application(modules.Games, modules.HallOfFame):
 			# perform lowercasing so Admin and admin aren't two completely different users
 			username = username.lower()
 			
+			if self.config.autostart:
+				# launch hint servers (if they weren't online already)
+				process = launchPythonProcess('start_servers.py')
+				process.wait() # wait until all servers have been launched
+			
 			# create a new session and return the session id
 			session = self.createSession(username, request['language'])
+			
 			response = {
 				'status': 'success',
 				'session_id': session.id,
@@ -52,17 +60,31 @@ class Application(modules.Games, modules.HallOfFame):
 		elif not self._require(request, 'session_id'):
 			response = self.missing('session_id')
 		else:
+			last_seen = datetime.datetime.now() # get a timestamp BEFORE the servers are polled and refreshed, so that we can guarantee that the server timeouts always happen after the user session times out
 			session = self.getSession(request['session_id'])
 			if not session:
 				response = self.error('Invalid \'session_id\'')
 				return response
 			
 			# check if the session has timed out
-			if session.last_seen + datetime.timedelta(seconds=self.config.session_timeout) < datetime.datetime.now():
+			if self.config.session_timeout and session.last_seen + datetime.timedelta(seconds=self.config.session_timeout) < datetime.datetime.now():
 				response = self.error('Session timed out')
 				return response
 			
+			# poll the hint servers to see if they are up and runnning and refresh their internal server timeouts in the process
+			status, message = pollServers(self.config.SERVERS.keys())
+			if not status:
+				response = self.error('Hint servers could not be reached. (Internal Server Error)')
+				print('Hint server could not be reached:', message, file=sys.stderr)
+				return response
+			
+			# handle request
 			response = self.handleRequest(request, session)
+			
+			# update last seen date
+			session.last_seen = last_seen
+			
+			# save session
 			self.saveSession(session)
 		
 		return response

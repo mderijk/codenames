@@ -15,6 +15,14 @@ if sys.platform == 'win32': # windows
 else:
 	PYTHON_PATH = 'venv/bin/python'
 
+def launchPythonProcess(program_filepath, *args, cwd=None):
+	if sys.platform == 'win32':
+		process = subprocess.Popen([PYTHON_PATH, program_filepath, *args], cwd=cwd, creationflags=DETACHED_PROCESS) # NOTE: DETACHED_PROCESS is Windows only
+	else:
+		process = subprocess.Popen(['nohup', PYTHON_PATH, program_filepath, *args], cwd=cwd) # although not the same, nohup is the replacement for DETACHED_PROCESS
+	
+	return process
+
 def launchServer(server_name, socket):
 	# try opening a listener and depending on whether it fails, open a new process
 	try:
@@ -25,14 +33,49 @@ def launchServer(server_name, socket):
 	else:
 		# initiate and dispatch independent server processes
 		cwd = os.path.dirname(os.path.abspath(inspect.stack()[0][1]))
-		if sys.platform == 'win32':
-			process = subprocess.Popen([PYTHON_PATH, 'hintserver.py', server_name], cwd=cwd, creationflags=DETACHED_PROCESS) # NOTE: DETACHED_PROCESS is Windows only
-		else:
-			process = subprocess.Popen(['nohup', PYTHON_PATH, 'hintserver.py', server_name], cwd=cwd) # although not the same, nohup is the replacement for DETACHED_PROCESS
+		process = launchPythonProcess('hintserver.py', server_name, cwd=cwd)
 		
 		return process
 
+def pollServer(server_name):
+	request = {
+		'action': 'poll'
+	}
+	try:
+		connection = Client(SERVERS[server_name]['socket'])
+	except ConnectionRefusedError as e:
+		return (False, 'Connection refused for server \'{}\''.format(server_name))
+	
+	# poll the server
+	connection.send(request)
+	
+	# close connection and return server response
+	try:
+		response = connection.recv()
+	except EOFError:
+		return (False, 'Received unexpected end of file from server \'{}\' during polling'.format(server_name))
+	except ConnectionResetError:
+		return (False, 'The connection was reset during polling of server \'{}\''.format(server_name))
+	else:
+		if response['status'] == 'success':
+			return (True, None)
+		else:
+			return (False, 'Received incorrect response from server \'{}\' during polling'.format(server_name))
+	finally:
+		connection.close()
+
+def pollServers(server_names):
+	for server_name in server_names:
+		status, message = pollServer(server_name)
+		if not status:
+			return (False, message)
+	
+	return (True, None)
+
 def main():
+	MAX_POLL_COUNT = 5
+	POLL_INTERVAL = 2 # seconds
+	
 	# make sure errors are written to a log file
 	scriptdir = os.path.dirname(__file__)
 	logdir = os.path.join(scriptdir, 'logs')
@@ -48,8 +91,8 @@ def main():
 			processes[server_name] = process
 	
 	# poll servers to make sure they booted correctly
-	while processes:
-		time.sleep(2)
+	for i in range(MAX_POLL_COUNT):
+		time.sleep(POLL_INTERVAL)
 		
 		# send out a probe to each server
 		terminated_servers = []
@@ -66,38 +109,25 @@ def main():
 				continue
 			
 			# try to make contact
-			request = {
-				'action': 'poll'
-			}
-			try:
-				connection = Client(SERVERS[server_name]['socket'])
-			except ConnectionRefusedError as e:
-				terminated_servers.append(server_name)
-				continue
-			
-			# poll the server
-			connection.send(request)
-			
-			# close connection and return server response
-			try:
-				response = connection.recv()
-				if response['status'] == 'success':
-					print('Server \'{}\' booted successfully'.format(server_name))
-					booted_servers.append(server_name)
-				else:
-					print('Received incorrect response from server \'{}\' during polling'.format(server_name))
-					terminated_servers.append(server_name)
-			except EOFError:
-				print('Received unexpected end of file from server \'{}\' during polling'.format(server_name))
-				terminated_servers.append(server_name)
-			except ConnectionResetError:
-				print('The connection was reset during polling of server \'{}\''.format(server_name))
-				terminated_servers.append(server_name)
-			connection.close()
+			status, message = pollServer(server_name)
+			if status:
+				booted_servers.append(server_name)
+				print('Server \'{}\' booted successfully'.format(server_name))
+			else:
+#				terminated_servers.append(server_name)
+				print(message)
 		
 		# remove servers from waiting list for which we know that they have been booted successfully or failed to boot
 		for server_name in terminated_servers + booted_servers:
 			del processes[server_name]
+		
+		# stop checking if all servers have been confirmed to be up and running
+		if not processes:
+			break
+	else:
+		print('Could not confirm whether the following servers are running:')
+		for server_name in processes:
+			print(server_name)
 
 if __name__ == '__main__':
 	main()

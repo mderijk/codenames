@@ -1,10 +1,18 @@
 
-from multiprocessing.connection import Listener
+import multiprocessing.connection
 import os
 import socket
 import sys
+import socket
 
 from .protocol import Protocol
+
+# a small hack to make the listener support non-blocking and timeout mode
+class Listener(multiprocessing.connection.Listener):
+	def accept(self, *args, timeout=None, **kwargs):
+		if timeout:
+			self._listener._socket.settimeout(float(timeout))
+		return super().accept(*args, **kwargs)
 
 # Connector class
 class Connector:
@@ -44,9 +52,12 @@ class Connector:
 		response = self.protocol.error(*errors)
 		self.send(response)
 	
-	def receive(self):
+	def receive(self, timeout=None):
 		while True:
-			self.connection = self.listener.accept()
+			try:
+				self.connection = self.listener.accept(timeout=timeout)
+			except socket.timeout:
+				return None
 			response = self.connection.recv()
 			
 			errors = []

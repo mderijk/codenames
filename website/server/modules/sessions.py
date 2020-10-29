@@ -93,9 +93,6 @@ class Sessions(module.Module):
 		# load session object from disk
 		session = self.loadSession(session_file)
 		
-		# update last seen date
-		self.last_seen = datetime.datetime.now()
-		
 		return session
 	
 	def saveSession(self, session):
