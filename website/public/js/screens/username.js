@@ -126,6 +126,9 @@ function Username(application, client) {
 	};
 	
 	this.createNewSession = function(username, language) {
+		// let the player know we are loading the AI models which might take time
+		application.setStatus('Loading AI models...');
+		
 		var data = {
 			'action': 'new_session',
 			'username': username,
@@ -143,6 +146,9 @@ function Username(application, client) {
 				
 				// switch to the menu
 				application.showMenu();
+				
+				// remove the loading status again
+				application.clearStatus();
 			}
 		}.bind(this));
 	};
