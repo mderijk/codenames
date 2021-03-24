@@ -13,7 +13,7 @@ if (!empty($input = file_get_contents('php://input')))
 	$descriptorspec = array(
 		0 => array('pipe', 'r'),
 		1 => array('pipe', 'w'),
-		2 => array('pipe', 'w'),
+		2 => array('file',  "$SERVER_DIRECTORY/logs/php.log", 'a'),
 	);
 	$cwd = dirname(__FILE__) . "/$SERVER_DIRECTORY";
 	$process = proc_open($cmd, $descriptorspec, $pipes, $cwd);
@@ -25,7 +25,6 @@ if (!empty($input = file_get_contents('php://input')))
 		
 		$json = stream_get_contents($pipes[1]);
 		fclose($pipes[1]);
-		fclose($pipes[2]);
 		proc_close($process);
 	}
 	else
